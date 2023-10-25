@@ -1,7 +1,8 @@
-import { createTheme } from '@mui/material/styles'
-import themeMain from './themeMain'
 
-const headerTheme = createTheme({
+import { createTheme } from '@mui/material/styles'
+import themeMain from '../../themesMUI/themeMain'
+
+const headerMobileTheme = createTheme({
   ...themeMain,
 
   components: {
@@ -9,36 +10,43 @@ const headerTheme = createTheme({
       styleOverrides:
         `img {
           display: block;
-            width: 90%;
-        }
-        @media only screen and (min-width: 900px){
-          img {
-           width: 30%;
-          }
+            width: 30%;
+            object-fit: contain;
         }
         ` ,
       },
-  
-
-    
+ 
+   MuiButton:{
+    styleOverrides:{
+      root:{
+        margin:0,
+        padding: 0,
+        display:'block'
+      }
+    }
+   }, 
    MuiContainer:{
     styleOverrides:{
       root:{
-        xs:{
           display: 'flex',
+          flexDirection: 'row', 
+          justifyContent: 'space-around',
           width: '100%',
-          margin: '10px',
-          padding: '0'
+          // margin: '10px',
+          padding: '5%',
+       
+          
         },
+        
       }
-    }
-   },
+      
+    },
     MuiList: {
       styleOverrides: {
         root: {
-          // display: 'flex',  
-          // justifyContent: 'center'  
-    },  },
+          display: 'flex', 
+          flexDirection: 'row', 
+         },  },
       
     },
     MuiSvgIcon:{
@@ -55,7 +63,6 @@ const headerTheme = createTheme({
         root: {
           color: '#999',
           textDecoration: 'none',
-          // alignItems: 'center',
           display: 'flex',
           '&:hover, &:focus': { color: '#f37435'},
           '&:active' :{textDecoration:'underline'},
@@ -77,4 +84,4 @@ const headerTheme = createTheme({
     },
   },
 })
-export default headerTheme
+export default headerMobileTheme

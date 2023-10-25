@@ -1,43 +1,47 @@
+
 import { createTheme } from '@mui/material/styles'
-import themeMain from './themeMain'
+import themeMain from '../../themesMUI/themeMain'
 
 const headerTheme = createTheme({
   ...themeMain,
-
+typography:{
+fontSize:20,
+},
   components: {
     MuiCssBaseline: {
       styleOverrides:
         `img {
           display: block;
-            width: 90%;
-        }
-        @media only screen and (min-width: 900px){
-          img {
-           width: 30%;
-          }
+            width: 50%;
+            object-fit: contain;
         }
         ` ,
       },
-  
-
-    
+   MuiButton:{
+    styleOverrides:{
+      root:{
+        margin:0,
+        padding: 0,
+        display:'block'
+      }
+    }
+   }, 
    MuiContainer:{
     styleOverrides:{
       root:{
-        xs:{
           display: 'flex',
+          flexDirection: 'row', 
           width: '100%',
           margin: '10px',
           padding: '0'
         },
       }
-    }
-   },
+    },
     MuiList: {
       styleOverrides: {
         root: {
-          // display: 'flex',  
-          // justifyContent: 'center'  
+          display: 'flex', 
+          flexDirection: 'row' 
     },  },
       
     },
@@ -55,7 +59,6 @@ const headerTheme = createTheme({
         root: {
           color: '#999',
           textDecoration: 'none',
-          // alignItems: 'center',
           display: 'flex',
           '&:hover, &:focus': { color: '#f37435'},
           '&:active' :{textDecoration:'underline'},
