@@ -1,7 +1,7 @@
 import { createTheme } from '@mui/material/styles'
-import themeMain from '../../themesMUI/themeMain'
+import themeMain from '../../../themesMUI/themeMain'
 
-const themeMainPage = createTheme({
+const themeMainSlider = createTheme({
  components:{
   MuiCssBaseline:{
     styleOverrides:
@@ -21,13 +21,6 @@ const themeMainPage = createTheme({
     // 0 0 2px #d44a06a8, 0 0 2px #d44a06a8;
   },
 
-MuiCard:{
-styleOverrides:{
-root:{
-  width: '100%',
-},
-},
-},
 
  MuiPaper:{
   styleOverrides:{ root:{
@@ -64,20 +57,7 @@ root:{
   },},
  
  },
- MuiCardMedia:{
-  styleOverrides:{
-    root:{
-      width: '40%',
-      maxHeight: '600px',
-      borderRadius: '2%',
-      position: 'relative',
-    boxShadow: '20px 20px 35px -13px #616161',
-    margin: '5%',
-  
 
-    },
-    },
-  },
  
  MuiTypography:{
 styleOverrides:{
@@ -113,4 +93,4 @@ h2:{
    
   
 })
-export default themeMainPage
+export default themeMainSlider

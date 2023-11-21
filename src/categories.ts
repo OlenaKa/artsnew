@@ -1,10 +1,5 @@
 const categories = [
-  {
-    title: 'Naslovna',
-    path: '/',
-    imageSrc:'stikermainimage.jpg',
-    items: [],
-  },
+
   {
     title: '3d stikeri',
     path: '/stiker',
@@ -44,6 +39,12 @@ const categories = [
         path: '/digitalna_štampa_velikog_formata',
       },
     ],
+  },
+  {
+    title: 'O nama',
+    path: '/',
+    imageSrc:'stikermainimage.jpg',
+    items: [],
   },
 ]
 

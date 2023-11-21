@@ -15,6 +15,7 @@ fontSize:20,
             width: 50%;
             object-fit: contain;
         }
+        
         ` ,
       },
    MuiButton:{

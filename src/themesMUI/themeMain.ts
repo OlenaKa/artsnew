@@ -30,6 +30,24 @@ const themeMain = createTheme({
     },
   },
   components: {
+    MuiCssBaseline:{
+      styleOverrides:
+      '.mainPic{  width:22%;  position: absolute; top: 0; right: 0;z-index: 2;}',
+      // `@keyframes glow { from {
+      //   text-shadow: 0 0 8px #999;
+      // }
+      // to {
+      //   text-shadow:2px 7px 30px -1px rgba(0,0,0,0.75);
+        
+        
+        
+      // }};
+      
+      // @keyframes slide {100% { left: 0; }};`
+   
+      // 0 0 2px #d44a06a8, 0 0 2px #d44a06a8;
+    },
+
     // MuiInputBase-input-MuiOutlinedInput-input
     MuiInputBase: {
       styleOverrides: {

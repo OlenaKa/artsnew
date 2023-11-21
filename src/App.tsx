@@ -9,13 +9,16 @@ import themeMain from './themesMUI/themeMain'
 import headerTheme from './themesMUI/headerTheme'
 import { Grid } from '@mui/material'
 import { Route, Routes } from 'react-router-dom';
+import Footer from './Components/Footer/Footer';
 
+let string = 'http://nfc.rs/gallery/'
 
 function App() {
   const matches=  useMediaQuery('(min-width:801px)')
   return (
     <ThemeProvider theme={themeMain}>
        <CssBaseline/>
+      {/* {matches &&  <img className='mainPic' src={string.concat('bg_brush_fromtop.jpg')}/>} */}
         {/* <Grid> */}
           {/* <ThemeProvider theme={headerTheme}>
           <CssBaseline/> */}
@@ -24,7 +27,7 @@ function App() {
               <Route path="/" element={<MainPage/>}/>
               {/* {matches&& <NavBar></NavBar>} */}
             </Routes>
-
+           <Footer/>
           {/* </ThemeProvider> */}
         {/* </Grid> */}
      
