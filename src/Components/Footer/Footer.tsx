@@ -7,6 +7,9 @@ import { NavLink } from "react-router-dom";
 import LocalPhoneIcon from '@mui/icons-material/LocalPhone'
 import SmartphoneIcon from '@mui/icons-material/Smartphone'
 import AlternateEmailIcon from '@mui/icons-material/AlternateEmail'
+import FacebookIcon from '@mui/icons-material/Facebook';
+import InstagramIcon from '@mui/icons-material/Instagram';
+import YouTubeIcon from '@mui/icons-material/YouTube';
 
 let string = 'http://nfc.rs/gallery/'
 
@@ -23,11 +26,21 @@ export default function Footer(): JSX.Element {
     <List>
       {categories.map((category)=><ListItem key={category.title}><NavLink to={category.path}>{category.title}</NavLink></ListItem>)}
     </List>
+    <List className="socials">
+      <ListItem><Link className="socials" href="https://www.facebook.com/arts.designdoo" rel="noopener noreferrer" target="_blank"> <FacebookIcon/></Link></ListItem>
+      <ListItem>
+      <Link className="socials" href="https://www.instagram.com/arts_design_belgrade/" rel="noopener noreferrer" target="_blank"><InstagramIcon/></Link>
+      </ListItem>
+      <ListItem>
+      <Link className="socials" href="https://www.youtube.com/channel/UC9QvsvynPKgh8g5LZsm8Qqw" rel="noopener noreferrer" target="_blank"><YouTubeIcon/></Link>
+      </ListItem>
+
+    </List>
     <List>
           <ListItem>
           <Link href="tel:+381113988377">
            
-            <LocalPhoneIcon /> 0113988377
+          <Typography noWrap>  <LocalPhoneIcon /> 0113988377</Typography>
           </Link>
           </ListItem>
         <ListItem><Link href="tel:+381646156081">
