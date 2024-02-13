@@ -29,12 +29,6 @@ flexDirection:'column',
         '&:hover > .MuiSvgIcon-root, &:focus > .MuiSvgIcon-root': { fill: '#999' },
         '&[aria-current]': {
           textDecoration: 'none',
-          // color: '#ffffff',
-          // padding: '8px',
-          // borderRadius: '7px',
-          // lineHeight: '0.7em',
-          // boxShadow: '0px 0px 0px 2px #ffffff',
-          // border: '2px solid transparent',
           transition: 'box-shadow 0.5s cubic-bezier(0.47, 0, 0.745, 0.715)',
         },
 

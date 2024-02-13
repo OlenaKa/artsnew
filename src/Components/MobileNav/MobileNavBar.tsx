@@ -13,7 +13,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import CloseIcon from "@mui/icons-material/Close";
 import Popper from "@mui/material/Popper";
 import useOnClickOutside from "../../hooks/useOnClickOutside";
-
+import { useNavigate } from "react-router-dom";
 // interface Categories  Array <Category> {}
 
 interface ProrsMobileNavBar {
@@ -22,15 +22,13 @@ interface ProrsMobileNavBar {
 }
 export default function MobileNavBar({ categories, close }: ProrsMobileNavBar) {
   const ref = useRef<HTMLDivElement>(null);
-const [className, setClassName] = useState('slide-in-right');
-const onClose =()=>{
-  setClassName('slide-out-right')
-  setTimeout(()=>{
-  
-    
-    close()
-  }, 500)
-}
+  const [className, setClassName] = useState("slide-in-right");
+  const onClose = () => {
+    setClassName("slide-out-right");
+    setTimeout(() => {
+      close();
+    }, 500);
+  };
 
   useOnClickOutside(ref, onClose);
   return (
@@ -41,9 +39,13 @@ const onClose =()=>{
         <ul>
           {categories.map((category) =>
             hasChildren(category) ? (
-              <li key={category.title}>{CategoryMultyLevel(category)}</li>
+              <li key={category.title}>
+                {CategoryMultyLevel(category, close)}
+              </li>
             ) : (
-              <li key={category.title}>{CategorySingleLevel(category)}</li>
+              <li key={category.title}>
+                {CategorySingleLevel(category, close)}
+              </li>
             )
           )}
         </ul>
@@ -52,11 +54,35 @@ const onClose =()=>{
   );
 }
 
-function CategorySingleLevel(category: Category): JSX.Element {
-  return <NavLink to={category.path}>{category.title}</NavLink>;
+function CategorySingleLevel(
+  category: Category,
+  close: () => void
+): JSX.Element {
+  const navigate = useNavigate();
+  const handleClik = (event: React.MouseEvent) => {
+    event.preventDefault();
+
+    close();
+    navigate(`${category.path}`);
+  };
+  return (
+    <NavLink to={category.path} onClick={handleClik}>
+      {category.title}
+    </NavLink>
+  );
 }
 
-function CategoryMultyLevel(category: Category): JSX.Element {
+function CategoryMultyLevel(
+  category: Category,
+  close: () => void
+): JSX.Element {
+  const navigate = useNavigate();
+  const handleClik = (event: React.MouseEvent) => {
+    event.preventDefault();
+
+    close();
+    navigate(`${category.path}`);
+  };
   const [open, setOpen] = useState(false);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
     setOpen(open ? false : true);
@@ -65,25 +91,24 @@ function CategoryMultyLevel(category: Category): JSX.Element {
   return (
     <>
       <div onClick={handleClick}>
-      
         {category.title}
         {open ? (
           <ExpandLessIcon className="icon"></ExpandLessIcon>
         ) : (
           <ExpandMoreIcon className="icon"></ExpandMoreIcon>
         )}
-           <Collapse in={open}>
-        <ul>
-          {category.items?.map((item) => (
-            <li key={item.title}>
-              <NavLink to={item.path}>{item.title}</NavLink>
-            </li>
-          ))}
-        </ul>
-      </Collapse>
+        <Collapse in={open}>
+          <ul>
+            {category.items?.map((item) => (
+              <li key={item.title}>
+                <NavLink to={item.path} onClick={handleClik}>
+                  {item.title}
+                </NavLink>
+              </li>
+            ))}
+          </ul>
+        </Collapse>
       </div>
-
-   
     </>
   );
 }

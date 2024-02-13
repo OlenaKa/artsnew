@@ -6,7 +6,7 @@ const themeFooter = createTheme({
   components: {
     
     MuiCssBaseline: {
-      styleOverrides: ".logoFooter { display: block; width: 50%; object-fit: contain;}; a{color:white; text-decoration: none}",
+      styleOverrides: ".logoFooter { display: block; width: 50%; object-fit: contain;}; a{color:white; text-decoration: none}; @media only screen and (min-width: 600px) {.logoFooter {width: 20%;};",
     },
     MuiPaper: {
       styleOverrides: {
@@ -22,7 +22,9 @@ const themeFooter = createTheme({
           borderRadius: "0",
           backgroundColor:'#212121',
           [themeMain.breakpoints.up('sm')]:{
-            
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+
           }
         },
       },

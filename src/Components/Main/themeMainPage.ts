@@ -14,7 +14,7 @@ const themeMainPage = createTheme({
  components:{
   MuiCssBaseline:{
     styleOverrides:
-    '',
+    '@keyframes fadeIn { 0% { opacity: 0; }100% { opacity: 1; }}',
     // `@keyframes glow { from {
     //   text-shadow: 0 0 8px #999;
     // }
@@ -29,69 +29,88 @@ const themeMainPage = createTheme({
  
     // 0 0 2px #d44a06a8, 0 0 2px #d44a06a8;
   },
-
-MuiCard:{
-styleOverrides:{
-root:{
-  width: '100%',
-},
-},
-},
-
- MuiPaper:{
-  styleOverrides:{ root:{
-    padding:'2%',
-    width:'100%',
-   display:'flex',
-   flexDirection: 'row',
-   justifyContent: 'space-evenly',
-   alignItems:'center',
-   border:'none',
-   boxShadow:'none',
-   borderRadius:'none',
-  //  '::before':{
-  //   content:'"a"',
-  //   fontSize:'650px',
-  //   color:'#999',
-  //   position:'absolute',
-  //   left:'24px',
-  //   top:'-278px',
-  //   fontFamily:'auto',
-  //   opacity: '20%'
-  //     },
-  //     '::after':{
-  //       content:'url(http://nfc.rs/gallery/bg_brush.jpg)',
-  //       fontSize:'650px',
-  //       color:'#999',
-  //       position:'absolute',
-  //       left:'24px',
-  //       top:'-278px',
-  //       fontFamily:'auto',
-  //       opacity: '20%'
-  //         },
-
-  },},
- 
- },
- MuiCardMedia:{
+MuiImageList:{
   styleOverrides:{
     root:{
-      width: '40%',
-      maxHeight: '600px',
-      borderRadius: '2%',
-      position: 'relative',
-    boxShadow: '20px 20px 35px -13px #616161',
-    margin: '5%',
+     
+      gridTemplateColumns: 'repeat(1, 1fr)',
+      gap: '4px',
+      [themeMain.breakpoints.up('sm')]:{
+        // flexDirection: 'row',
+        // justifyContent: 'space-between',
+
+      },
+    },
+  },
+},
+MuiImageListItem:{
+  styleOverrides:{
+    root:{
+      margin:'5px',
+      padding:'20px 20px 0px 20px',
+      border:'solid 2px #f37435',
+      borderRadius:'5px',
+      // '::after':{
+      //       content:"radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 1) 50%, rgba(255, 255, 255, 1) 100%)",
+      //       width:'95%',
+      //       height:'95%',
+                         
+      //         position:'absolute',
+      //         // left:'24px',
+      //         // top:'-278px',
+      //         fontFamily:'auto',
+      //         opacity: '20%'
+      //       },
+      },
+      img:{
+        borderRadius:'inherit',
+      }
+    },
+  
+},
+MuiImageListItemBar:{
+  styleOverrides:{
+    root:{
+      position:'relative',
+      background:'white',
+
+      
+     
+// background: 'no-repeat right/70% url(http://nfc.rs/gallery/brush_white_1.png)',
+
+    },
+title:{
+  textAlign: 'end',
+  color: '#f37435',
+  textTransform: 'uppercase',
+  fontWeight: 'bold',
+}
+  },
+},
+
+ MuiSvgIcon:{
+  styleOverrides:{
+    root:{
+      color: '#f37435',
   
 
     },
     },
   },
  
+MuiIconButton:{
+  styleOverrides:{
+    root:{
+// padding:'0px',
+    },
+  },
+},
+
+
  MuiTypography:{
 styleOverrides:{
 root:{
-width: '40%',
+// width: '40%',
 height:'100%',
 display: 'flex',
 justifyContent:'center',
