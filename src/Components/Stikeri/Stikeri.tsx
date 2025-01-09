@@ -1,7 +1,11 @@
 import React from "react";
 import { useState, useEffect } from "react";
 import { ThemeProvider } from "@mui/material/styles";
+import Container from "@mui/material/Container";
 import Paper from "@mui/material/Paper";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import CardMedia from "@mui/material/CardMedia";
 import MenuItem from "@mui/material/MenuItem";
 import FormControl from "@mui/material/FormControl";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
@@ -12,12 +16,20 @@ import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
 import { Button } from "@mui/material";
 import { calculateResult, validateForm } from "./formulaHelpersStikers";
-
 import themeStikeri from "./themeStikeri";
+import { Result } from "./formulaHelpersStikers";
+import ResultStikeri from "./ResultStikeri";
+import { Category } from "../MobileNav/typesCategories";
 
 const positiveNumber = /^[1-9]\d*(\.\d+)?$/;
+const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
+let stringSrc = "http://nfc.rs/gallery/";
 
-export default function Stikeri(): JSX.Element {
+export default function Stikeri({
+  imageSrc,
+}: {
+  imageSrc: string;
+}): JSX.Element {
   const [foil, setFoil] = useState("");
   const [foilError, setFoilError] = useState(false);
   const [shape, setShape] = useState("");
@@ -30,6 +42,7 @@ export default function Stikeri(): JSX.Element {
   const [diameterError, setDiameterError] = useState(false);
   const [quantity, setQuantity] = useState<string | number>("");
   const [quantityError, setQuantityError] = useState(false);
+  const [result, setResult] = useState<false | Result>(false);
 
   useEffect(() => {}, [
     foil,
@@ -42,6 +55,7 @@ export default function Stikeri(): JSX.Element {
     widthError,
     heightError,
     diameterError,
+    result,
   ]);
 
   const handleChangeFoil = (event: SelectChangeEvent) => {
@@ -56,7 +70,10 @@ export default function Stikeri(): JSX.Element {
 
   const handleChangeWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWidth(`${event.target.value}`);
-    if (!positiveNumber.test(event.target.value)) {
+    if (
+      !positiveNumberOrOneDecimal.test(event.target.value) ||
+      !positiveNumber.test(event.target.value)
+    ) {
       setWidthError(true);
     } else {
       setWidthError(false);
@@ -65,7 +82,7 @@ export default function Stikeri(): JSX.Element {
 
   const handleChangeHeight = (event: React.ChangeEvent<HTMLInputElement>) => {
     setHeight(`${event.target.value}`);
-    if (!positiveNumber.test(event.target.value)) {
+    if (!positiveNumberOrOneDecimal.test(event.target.value)) {
       setHeightError(true);
     } else {
       setHeightError(false);
@@ -73,7 +90,7 @@ export default function Stikeri(): JSX.Element {
   };
   const handleChangeDiameter = (event: React.ChangeEvent<HTMLInputElement>) => {
     setDiameter(`${event.target.value}`);
-    if (!positiveNumber.test(event.target.value)) {
+    if (!positiveNumberOrOneDecimal.test(event.target.value)) {
       setDiameterError(true);
     } else {
       setDiameterError(false);
@@ -90,11 +107,25 @@ export default function Stikeri(): JSX.Element {
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-
-    console.log("shape", shape);
-    console.log("width", width);
-    console.log("height", height);
-    console.log("diameter", diameter);
+    console.log(
+      "validation:",
+      validateForm(
+        event,
+        foil,
+        setFoilError,
+        shape,
+        setShapeError,
+        quantity,
+        setQuantityError,
+        diameter,
+        setDiameterError,
+        width,
+        setWidthError,
+        height,
+        setHeightError,
+        positiveNumber
+      )
+    );
 
     if (
       validateForm(
@@ -114,7 +145,7 @@ export default function Stikeri(): JSX.Element {
         positiveNumber
       )
     ) {
-      const result = calculateResult(
+      const getParams = calculateResult(
         shape,
         foil,
         Number(quantity),
@@ -122,8 +153,7 @@ export default function Stikeri(): JSX.Element {
         height,
         diameter
       );
-
-      console.log("result", result);
+      setResult(getParams);
     }
   };
 
@@ -132,120 +162,141 @@ export default function Stikeri(): JSX.Element {
       <ThemeProvider theme={themeStikeri}>
         <Paper>
           <Typography variant="h2"> 3d Stikeri </Typography>
-          <Box component="form" onSubmit={handleSubmit}>
-            <FormControl key="foil" error={foilError}>
-              <InputLabel id="foil-helper">Izaberite foliju</InputLabel>
-              <Select
-                labelId="foil-helper"
-                id="foil"
-                value={foil}
-                label="Izaberite foliju"
-                onChange={handleChangeFoil}
-              >
-                <MenuItem value="bela" key="bela">
-                  Bela
-                </MenuItem>
-                <MenuItem value="gold" key="gold">
-                  Srebrna ili Zlatna
-                </MenuItem>
-              </Select>
-              <FormHelperText>
-                {!foilError ? "Obavezno polje*" : "Niste izabrali foliju!"}
-              </FormHelperText>
-            </FormControl>
-            <FormControl key="shape" error={shapeError}>
-              <InputLabel id="shape-helper">Izaberite oblik</InputLabel>
-              <Select
-                labelId="shape-helper"
-                id="shape"
-                value={shape}
-                label="Izaberite oblik"
-                onChange={handleChangeShape}
-              >
-                <MenuItem value="rectangle" key="rectangle">
-                  Pravougaonik ili kvadrat
-                </MenuItem>
-                <MenuItem value="circle" key="circle">
-                  Krug
-                </MenuItem>
-                <MenuItem value="ellipse" key="ellipse">
-                  Elipsa
-                </MenuItem>
-              </Select>
-              <FormHelperText>
-                {!shapeError ? "Obavezno polje*" : "Niste izabrali oblik!"}
-              </FormHelperText>
-            </FormControl>
-            <FormControl key="quantity">
-              <TextField
-                id="quantity"
-                label="Unesite količinu"
-                error={quantityError}
-                value={quantity}
-                type="number"
-                helperText={
-                  !quantityError
-                    ? "Obavezno polje*"
-                    : "Niste uneli validnu veličinu!"
-                }
-                onChange={handleChangeQuantity}
-              ></TextField>
-            </FormControl>
-            {shape === "circle" ? (
-              <FormControl key="diameter">
+          {/* <Container> */}
+          <CardMedia
+            component="img"
+            // height="194"
+            image={stringSrc.concat(imageSrc)}
+            alt="Stiker Porsche"
+          />
+          <Box>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Typography variant="h5">Kalkulator</Typography>
+              <FormControl key="foil" error={foilError}>
+                <InputLabel id="foil-helper" className="select">
+                  Izaberite foliju
+                </InputLabel>
+                <Select
+                  labelId="foil-helper"
+                  id="foil"
+                  value={foil}
+                  label="Izaberite foliju"
+                  onChange={handleChangeFoil}
+                >
+                  <MenuItem value="bela" key="bela">
+                    Bela
+                  </MenuItem>
+                  <MenuItem value="gold" key="gold">
+                    Srebrna ili Zlatna
+                  </MenuItem>
+                </Select>
+                <FormHelperText>
+                  {!foilError ? "Obavezno polje*" : "Niste izabrali foliju!"}
+                </FormHelperText>
+              </FormControl>
+              <FormControl key="shape" error={shapeError}>
+                <InputLabel id="shape-helper" className="select">
+                  Izaberite oblik
+                </InputLabel>
+                <Select
+                  labelId="shape-helper"
+                  id="shape"
+                  value={shape}
+                  label="Izaberite oblik"
+                  onChange={handleChangeShape}
+                >
+                  <MenuItem value="rectangle" key="rectangle">
+                    Pravougaonik ili kvadrat
+                  </MenuItem>
+                  <MenuItem value="circle" key="circle">
+                    Krug
+                  </MenuItem>
+                  <MenuItem value="ellipse" key="ellipse">
+                    Elipsa
+                  </MenuItem>
+                </Select>
+                <FormHelperText>
+                  {!shapeError ? "Obavezno polje*" : "Niste izabrali oblik!"}
+                </FormHelperText>
+              </FormControl>
+
+              {shape === "circle" ? (
+                <FormControl key="diameter">
+                  <TextField
+                    id="diameter"
+                    label="Unesite prečnik u milimetrima"
+                    error={diameterError}
+                    value={diameter}
+                    type="number"
+                    helperText={
+                      !diameterError
+                        ? "Obavezno polje*"
+                        : "Niste uneli validnu veličinu!"
+                    }
+                    onChange={handleChangeDiameter}
+                    inputProps={{ min: "0,1", step: "0,1" }}
+                  ></TextField>
+                </FormControl>
+              ) : (
+                <>
+                  <FormControl key="width">
+                    <TextField
+                      id="width"
+                      label="Unesite širinu u milimetrima"
+                      error={widthError}
+                      value={width}
+                      type="number"
+                      helperText={
+                        !widthError
+                          ? "Obavezno polje*"
+                          : "Niste uneli validnu veličinu!"
+                      }
+                      onChange={handleChangeWidth}
+                      inputProps={{ min: "0,1", step: "0,1" }}
+                    ></TextField>
+                  </FormControl>
+                  <FormControl key="height">
+                    <TextField
+                      id="height"
+                      label="Unesite visinu u milimetrima"
+                      error={heightError}
+                      value={height}
+                      type="number"
+                      helperText={
+                        !heightError
+                          ? "Obavezno polje*"
+                          : "Niste uneli validnu veličinu!"
+                      }
+                      inputProps={{ min: "0,1", step: "0,1" }}
+                      onChange={handleChangeHeight}
+                    ></TextField>
+                  </FormControl>
+                </>
+              )}
+              <FormControl key="quantity">
                 <TextField
-                  id="diameter"
-                  label="Unesite prečnik u milimetrima"
-                  error={diameterError}
-                  value={diameter}
+                  id="quantity"
+                  label="Unesite količinu"
+                  error={quantityError}
+                  value={quantity}
                   type="number"
                   helperText={
-                    !diameterError
+                    !quantityError
                       ? "Obavezno polje*"
                       : "Niste uneli validnu veličinu!"
                   }
-                  onChange={handleChangeDiameter}
+                  onChange={handleChangeQuantity}
+                  inputProps={{ min: "0", step: "1" }}
                 ></TextField>
               </FormControl>
-            ) : (
-              <>
-                <FormControl key="width">
-                  <TextField
-                    id="width"
-                    label="Unesite širinu u milimetrima"
-                    error={widthError}
-                    value={width}
-                    type="number"
-                    helperText={
-                      !widthError
-                        ? "Obavezno polje*"
-                        : "Niste uneli validnu veličinu!"
-                    }
-                    onChange={handleChangeWidth}
-                  ></TextField>
-                </FormControl>
-                <FormControl key="height">
-                  <TextField
-                    id="height"
-                    label="Unesite visinu u milimetrima"
-                    error={heightError}
-                    value={height}
-                    type="number"
-                    helperText={
-                      !heightError
-                        ? "Obavezno polje*"
-                        : "Niste uneli validnu veličinu!"
-                    }
-                    inputProps={{ min: "0", step: "0,1" }}
-                    onChange={handleChangeHeight}
-                  ></TextField>
-                </FormControl>
-              </>
-            )}
-            <Button type="submit" variant="contained">
-              Izračunaj
-            </Button>
+              <Button type="submit" variant="contained">
+                Izračunaj
+              </Button>
+            </Box>
+
+            {result && <ResultStikeri {...result} />}
           </Box>
+          {/* </Container> */}
         </Paper>
       </ThemeProvider>
     </>

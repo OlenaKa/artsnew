@@ -1,7 +1,3 @@
-// type Shape = "rectangle" | "circle" | "ellipse";
-
-import { m } from "framer-motion";
-
 const pricePerSqCmWhite = 2.2; // 1 cent per cm^2
 const pricePerSqCmGold = 2.7; // 1 cent per cm^2
 
@@ -64,11 +60,11 @@ const validateForm = (
       (!positiveNumber.test(String(diameter)) || diameter === ""):
       setErrorFieldDiameter();
       return false;
-    case (shape === "rectangle" || "ellipse") &&
+    case (shape === "rectangle" || shape === "ellipse") &&
       (!positiveNumber.test(String(width)) || width === ""):
       setErrorFieldWidth();
       return false;
-    case (shape === "rectangle" || "ellipse") &&
+    case (shape === "rectangle" || shape === "ellipse") &&
       (!positiveNumber.test(String(height)) || height === ""):
       setErrorFieldHeight();
       return false;
@@ -83,7 +79,7 @@ function calculateSurface(
   width?: string | number | undefined,
   height?: string | number | undefined,
   diameter?: string | number | undefined
-): number | null | undefined {
+): number {
   let surface: number | null = null;
 
   switch (shape) {
@@ -108,20 +104,17 @@ function calculateSurface(
   return surface;
 }
 
-function calculatePrice(
-  surface: number | null | undefined,
-  pricePerCm: number | null | undefined
-): number {
+function calculatePrice(surface: number, pricePerCm: number): number {
   const priceNet = Number(surface) * Number(pricePerCm);
   return priceNet;
 }
 
 interface Result {
-  priceNet: number | null | undefined;
-  valueNet: number;
-  valueBrutto: number;
-  shape: string;
-  foil: string;
+  priceNet: number | string;
+  valueNet: number | string;
+  valueBrutto: number | string;
+  shape?: string;
+  foil?: string;
   quantity?: number | null | undefined;
   width?: string | number | undefined;
   height?: string | number | undefined;
@@ -140,12 +133,12 @@ function calculateResult(
   width?: string | number | undefined,
   height?: string | number | undefined,
   diameter?: string | number | undefined
-): Result | number | null | undefined {
+): Result {
   const pricePerCm = foil === "bela" ? pricePerSqCmWhite : pricePerSqCmGold;
   console.log(pricePerCm);
 
   const surface = calculateSurface(shape, width, height, diameter);
-  const priceNet = roundToTwo(calculatePrice(surface, pricePerCm));
+  const priceNet = Number(roundToTwo(calculatePrice(surface, pricePerCm)));
 
   const valueEstimatedNet = Number(priceNet) * Number(quantity);
   if (valueEstimatedNet >= 2000) {
@@ -153,31 +146,24 @@ function calculateResult(
     const valueBrutto = roundToTwo(valueEstimatedNet * 1.2);
 
     const result: Result = {
-      priceNet,
-      valueNet,
-      valueBrutto,
-      shape,
-      quantity,
-      foil,
-      width,
-      height,
-      diameter,
+      priceNet: priceNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
+      valueNet: valueNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
+      valueBrutto: valueBrutto.toLocaleString("sr-RS", {
+        minimumFractionDigits: 2,
+      }),
     };
     return result;
   } else {
     const minQuantity = Math.round(2000 / Number(priceNet));
     const valueNet = roundToTwo(minQuantity * Number(priceNet));
-    const valueBrutto = roundToTwo(valueNet * 1.2);
+    const valueBrutto = roundToTwo(Number(valueNet) * 1.2);
 
     const result: Result = {
-      priceNet,
-      valueNet,
-      valueBrutto,
-      shape,
-      foil,
-      width,
-      height,
-      diameter,
+      priceNet: priceNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
+      valueNet: valueNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
+      valueBrutto: valueBrutto.toLocaleString("sr-RS", {
+        minimumFractionDigits: 2,
+      }),
       minQuantity,
     };
     return result;
@@ -185,3 +171,4 @@ function calculateResult(
 }
 
 export { calculateResult, validateForm };
+export type { Result };

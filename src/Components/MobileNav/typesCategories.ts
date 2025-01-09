@@ -1,18 +1,14 @@
-import { ReactNode } from "react";
+import { Component, ReactNode } from "react";
 
 export interface Category {
   title: string;
   path: string;
-  component: ReactNode;
+  component: React.ComponentType<{ imageSrc: string }> | String;
   imageSrc: string;
-    items?: {
+  items?: {
     title: string;
     path: string;
-    component: string;
-  }[]
-    
-  ;
+    component: React.ComponentType<{ imageSrc: string }> | String;
+    imageSrc?: string;
+  }[];
 }
-
-
-

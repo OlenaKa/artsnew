@@ -1,7 +1,7 @@
 import { createTheme } from "@mui/material/styles";
 import themeMain from "../../themesMUI/themeMain";
 
-const themeStikeri = createTheme({
+const themePvcNalepnice = createTheme({
   ...themeMain,
   components: {
     MuiCssBaseline: {
@@ -128,4 +128,4 @@ const themeStikeri = createTheme({
     },
   },
 });
-export default themeStikeri;
+export default themePvcNalepnice;

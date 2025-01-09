@@ -12,37 +12,44 @@ import { Route, Routes, useRoutes } from "react-router-dom";
 import Footer from "./Components/Footer/Footer";
 import Stikeri from "./Components/Stikeri/Stikeri";
 import categories from "./categories";
+import generateRoutes from "./generateRoutes";
 import { ReactFragment, ReactNode } from "react";
 let string = "http://nfc.rs/gallery/";
 
-interface Category {
-  title: string;
-  path: string;
-  imageSrc: string;
-  component: string;
-  items?: {
-    title: string;
-    path: string;
-    component: string;
-  }[];
-}
+// interface Category {
+//   title: string;
+//   path: string;
+//   imageSrc?: string;
+//   component: React.ComponentType<{ imageSrc: string }> | string;
+//   items?: Category[];
+// }
 
 function App() {
   const matches = useMediaQuery("(min-width:801px)");
+  console.log(generateRoutes(categories));
+
   return (
-    <ThemeProvider theme={themeMain}>
+    <>
       <CssBaseline />
+      <ThemeProvider theme={themeMain}>
+        {matches ? <Header></Header> : <HeaderMobile></HeaderMobile>}
+        <Routes>
+          <Route path="/" element={<MainPage />} />
+          {generateRoutes(categories)}
 
-      {matches ? <Header></Header> : <HeaderMobile></HeaderMobile>}
-      <Routes>
-        <Route path="/" element={<MainPage />} />
-
-        {categories.map(({ title, path, component }) => {
-          return <Route path={path} element={component} key={title} />;
-        })}
-      </Routes>
-      <Footer />
-    </ThemeProvider>
+          {/* {categories.map(({ title, path, component: Component, imageSrc }) => {
+            return (
+              <Route
+                path={path}
+                element={<Component imageSrc={imageSrc} />}
+                key={title}
+              />
+            );
+          })} */}
+        </Routes>
+        <Footer />
+      </ThemeProvider>
+    </>
   );
 }
 
