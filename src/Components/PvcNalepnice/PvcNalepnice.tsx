@@ -12,6 +12,7 @@ import {
   validateFormValues,
   calculatePrice,
 } from "./formulaHelperPVCNalepnice";
+import ResultPvcNalepnice from "./ResultPvcNalepnice";
 
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
 const positiveNumber = /^[1-9]\d*$/;
@@ -28,11 +29,17 @@ export default function PvcNalepnice({
   const [heightError, setHeightError] = useState(false);
   const [quantity, setQuantity] = useState<string | number>("");
   const [quantityError, setQuantityError] = useState(false);
-  const [QuotedPricePerPc, setQuotedPricePricePerPc] = useState<number | null>(
+  const [QuotedPricePerPc, setQuotedPricePricePerPc] = useState<
+    number | string | null
+  >(null);
+  const [QuotedPriceNet, setQuotedPriceNet] = useState<number | string | null>(
     null
   );
-  const [QuotedPriceNet, setQuotedPriceNet] = useState<number | null>(null);
-
+  const [QuotedPriceGross, setQuotedPriceGross] = useState<
+    number | string | null
+  >(null);
+  const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
+  useEffect(() => {}, [QuotedMOQ]);
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { isValid, errors } = validateFormValues({ height, width, quantity });
@@ -41,14 +48,15 @@ export default function PvcNalepnice({
     setQuantityError(errors.quantity);
 
     if (isValid) {
-      const { priceNet, pricePerPc } = calculatePrice({
+      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice({
         height,
         width,
         quantity,
       });
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
-      console.log(priceNet, pricePerPc);
+      setQuotedPriceGross(priceGross);
+      setQuotedMOQ(moq);
     } else {
       console.log("Form is invalid. Fix errors and try again.");
     }
@@ -144,6 +152,14 @@ export default function PvcNalepnice({
                 Izračunaj
               </Button>
             </Box>
+            {QuotedPricePerPc && QuotedPriceNet && (
+              <ResultPvcNalepnice
+                pricePerPc={QuotedPricePerPc}
+                priceNet={QuotedPriceNet}
+                priceGross={QuotedPriceGross}
+                moq={QuotedMOQ}
+              />
+            )}
           </Box>
         </Paper>
       </ThemeProvider>
