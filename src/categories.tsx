@@ -1,5 +1,6 @@
 import Stikeri from "./Components/Stikeri/Stikeri";
 import PvcNalepnice from "./Components/PvcNalepnice/PvcNalepnice";
+import ZastitneNalepnice from "./Components/ZastitneNalepnice/ZastitneNalepnice";
 
 const categories = [
   {
@@ -23,7 +24,7 @@ const categories = [
       {
         title: "Zaštitne nalepnice",
         path: "/zastitne_nalepnice",
-        component: "ZastitneNalepnice",
+        component: ZastitneNalepnice,
         imageSrc: "download.jpg",
       },
       {

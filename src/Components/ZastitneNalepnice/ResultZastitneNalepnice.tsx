@@ -6,9 +6,9 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
-import { PriceDetails } from "./formulaHelperPVCNalepnice";
+import { PriceDetails } from "./formulaHelperZastitneNalepnice";
 
-export default function ResultPvcNalepnice(params: PriceDetails) {
+export default function ResultZastitneNalepnice(params: PriceDetails) {
   useEffect(() => {
     document.getElementById("result")?.scrollIntoView();
   }, []);
@@ -48,9 +48,8 @@ export default function ResultPvcNalepnice(params: PriceDetails) {
           </TableBody>
         </Table>
         <Typography variant="caption" id="result">
-          *Cena je data za PVC nalepnicu, koja se štampa na beloj mat ili
-          sjajnoj foliji. Za ostale folije, kao naprimer zlatna ili srebrna,
-          molimo Vas da nas kontaktirate putem e-maila ili na broj telefona.
+          *Za porudzbine preko 50000 dinara, molimo da nas kontaktirate za
+          dodatni rabat.
         </Typography>
       </Box>
     </>
