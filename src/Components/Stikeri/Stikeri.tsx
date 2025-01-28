@@ -107,26 +107,6 @@ export default function Stikeri({
   };
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    console.log(
-      "validation:",
-      validateForm(
-        event,
-        foil,
-        setFoilError,
-        shape,
-        setShapeError,
-        quantity,
-        setQuantityError,
-        diameter,
-        setDiameterError,
-        width,
-        setWidthError,
-        height,
-        setHeightError,
-        positiveNumber
-      )
-    );
-
     if (
       validateForm(
         event,
@@ -162,7 +142,6 @@ export default function Stikeri({
       <ThemeProvider theme={themeStikeri}>
         <Paper>
           <Typography variant="h2"> 3d Stikeri </Typography>
-          {/* <Container> */}
           <CardMedia
             component="img"
             // height="194"

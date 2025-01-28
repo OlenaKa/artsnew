@@ -1,7 +1,7 @@
 import Stikeri from "./Components/Stikeri/Stikeri";
 import PvcNalepnice from "./Components/PvcNalepnice/PvcNalepnice";
 import ZastitneNalepnice from "./Components/ZastitneNalepnice/ZastitneNalepnice";
-
+import PapirneNalepnice from "./Components/PapirneNalepnice/PapirneNalepnice";
 const categories = [
   {
     title: "3d stikeri",
@@ -30,7 +30,7 @@ const categories = [
       {
         title: "Papirne nalepnice",
         path: "/papirne_nalepnice",
-        component: "PapirneNalepnice",
+        component: PapirneNalepnice,
         imageSrc: "download.jpg",
       },
     ],
