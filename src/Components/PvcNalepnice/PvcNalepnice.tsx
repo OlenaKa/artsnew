@@ -103,7 +103,7 @@ export default function PvcNalepnice({
               <FormControl key="width">
                 <TextField
                   id="width"
-                  label="Unesite širinu u sm, format 111,1"
+                  label="Unesite širinu u cm, format 111,1"
                   error={widthError}
                   value={width}
                   type="number"
@@ -119,7 +119,7 @@ export default function PvcNalepnice({
               <FormControl key="height">
                 <TextField
                   id="height"
-                  label="Unesite visinu u sm, format 111,1"
+                  label="Unesite visinu u cm, format 111,1"
                   error={heightError}
                   value={height}
                   type="number"

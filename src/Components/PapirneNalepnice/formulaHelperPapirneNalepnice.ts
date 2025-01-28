@@ -1,6 +1,6 @@
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
 const positiveInteger = /^[1-9]\d*$/;
-const maxSheetSurface = 1305;
+const maxSheetSurface = 1192.8; // 426mm x 280mm
 const paperPricePerSheet = 19;
 const printingBWUpTo10 = 33;
 const printingBW10to50 = 28;

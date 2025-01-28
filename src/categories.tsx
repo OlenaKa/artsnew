@@ -60,7 +60,7 @@ const categories = [
     ],
   },
   {
-    title: "Štampane proizvode",
+    title: "Štampani proizvodi",
     path: "/stampane_proizvode",
     component: "StampaneProizvode",
     imageSrc: "download.jpg",
