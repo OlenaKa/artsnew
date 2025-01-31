@@ -1,11 +1,20 @@
 import { createTheme } from "@mui/material/styles";
 import themeMain from "../../themesMUI/themeMain";
+import { Padding } from "@mui/icons-material";
 
 const themePapirneNalepnice = createTheme({
   ...themeMain,
   components: {
     MuiCssBaseline: {
       styleOverrides: "",
+    },
+    MuiTypography: {
+      styleOverrides: {
+        body2: {
+          width: "100%",
+          textAlign: "center",
+        },
+      },
     },
     MuiPaper: {
       styleOverrides: {
@@ -60,6 +69,10 @@ const themePapirneNalepnice = createTheme({
             margin: "10px",
             minWidth: "35%",
             padding: "0",
+            "&#shape": {
+              // width: "100%",
+              // flexDirection: "row",
+            },
           },
         },
       },
@@ -71,16 +84,62 @@ const themePapirneNalepnice = createTheme({
         },
       },
     },
+    MuiFormGroup: {
+      styleOverrides: {
+        root: {
+          borderRadius: "4px",
+          outline: "1px solid #f37435",
+          "&#shape": {
+            padding: "15px 0px",
+            "&::after": {
+              content: '"Izaberite oblik"', // Text to display
+              position: "absolute",
+              top: "-15px", // Adjust position as needed
+              left: "50%",
+              transform: "translateX(-50%)",
+              backgroundColor: "#fff",
+              padding: "2px 5px",
+              borderRadius: "3px",
+              // boxShadow: "0 0 0 2px #f37435", // Outline effect
+            },
+          },
+          [themeMain.breakpoints.up("sm")]: {
+            "&#shape": {
+              marginLeft: "auto",
+              marginRight: "auto",
+              width: "90%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "row",
+            },
+          },
+        },
+      },
+    },
+    MuiFormControlLabel: {
+      styleOverrides: {
+        root: {
+          [themeMain.breakpoints.up("sm")]: {
+            width: "28%",
+            flexDirection: "row",
+          },
+        },
+      },
+    },
+
     MuiFormLabel: {
       styleOverrides: {
         root: {
+          "&.Mui-focused#shape": {
+            color: themeMain.palette.secondary.main,
+          },
           "&.select": {
             padding: "5%",
             [themeMain.breakpoints.up("sm")]: {
               padding: "0",
             },
           },
-          // padding: "5%",
         },
       },
     },

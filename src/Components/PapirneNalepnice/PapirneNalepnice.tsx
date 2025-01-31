@@ -16,7 +16,17 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
+import Radio, { RadioProps } from "@mui/material/Radio";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+
 import ResultPapirneNalepnice from "./ResultPapirneNalepnice";
+import FormLabel from "@mui/material/FormLabel";
+import {
+  CustomRadioOtherSingle,
+  CustomRadioSquareSingle,
+  CustomRadioOnSheet,
+} from "./radioHelperPapirneNalepnice";
 
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
 const positiveNumber = /^[1-9]\d*$/;
@@ -35,7 +45,7 @@ export default function PapirneNalepnice({
   const [quantityError, setQuantityError] = useState(false);
   const [printColor, setPrintColor] = useState("");
   const [printColorError, setPrintColorError] = useState(false);
-  // const [cutError, setCutError] = useState(false);
+  const [shape, setShape] = useState("squareSingle");
   const [QuotedPricePerPc, setQuotedPricePricePerPc] = useState<
     number | string | null
   >(null);
@@ -47,6 +57,7 @@ export default function PapirneNalepnice({
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
   useEffect(() => {}, [QuotedMOQ]);
+  console.log("PapirneNalepnice");
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const { isValid, errors } = validateFormValues({
@@ -118,6 +129,34 @@ export default function PapirneNalepnice({
           <Box>
             <Box component={"form"} onSubmit={handleSubmit}>
               <Typography variant="h5">Izračunajte cenu</Typography>
+              <FormControl key="shape" id="shape">
+                <FormLabel id="shape">
+                  <RadioGroup
+                    id="shape"
+                    aria-labelledby="shape"
+                    name="shape"
+                    value={shape}
+                    onChange={(e) => setShape(e.target.value)}
+                  >
+                    {/* <Typography variant="body2">Izaberite oblik</Typography> */}
+                    <FormControlLabel
+                      value="squareSingle"
+                      control={<CustomRadioSquareSingle />}
+                      label="Pojedinacne nalepnice pravougaonik/kvadrat"
+                    />
+                    <FormControlLabel
+                      value="otherSingle"
+                      control={<CustomRadioOtherSingle />}
+                      label="Pojedinačne nalepnice drugog oblika"
+                    />
+                    <FormControlLabel
+                      value="onSheet"
+                      control={<CustomRadioOnSheet />}
+                      label="Nalepnice na tabaku"
+                    />
+                  </RadioGroup>
+                </FormLabel>
+              </FormControl>
               <FormControl key="cut" error={printColorError}>
                 <InputLabel id="printColor" className="select">
                   Izaberite boju štampe
@@ -159,6 +198,7 @@ export default function PapirneNalepnice({
                   inputProps={{ min: "1", step: "1" }}
                 ></TextField>
               </FormControl>
+
               <FormControl key="width">
                 <TextField
                   id="width"
