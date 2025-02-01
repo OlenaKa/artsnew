@@ -14,12 +14,16 @@ const printingColor51to100 = 68;
 const printingColor101to250 = 58;
 const printingColor251to500 = 48;
 const printingColorabove501 = 40;
+const cuttingSetup = 300;
+const cuttingPricePerSheet = 30;
+const cuttingPricePerQty = 400;
 
 interface FormValues {
   height: string | number;
   width: string | number;
   quantity: string | number;
   printColor: string;
+  shape: string;
 }
 
 interface ValidationResult {
@@ -124,17 +128,41 @@ type PriceDetails = {
 function calculatePrice(values: FormValues): PriceDetails {
   const quantity = Number(values.quantity);
   const sheetsNumber = calculateSheets(values);
-  let priceNet;
+  let pricePrintingNet;
   switch (values.printColor) {
     case "bw":
-      priceNet = getPrintingPriceBW(sheetsNumber);
+      pricePrintingNet = getPrintingPriceBW(sheetsNumber);
       break;
     case "color":
-      priceNet = getPrintingPriceColor(sheetsNumber);
+      pricePrintingNet = getPrintingPriceColor(sheetsNumber);
+      break;
+    case "noPrinting":
+      pricePrintingNet = sheetsNumber * paperPricePerSheet;
+      break;
+    default:
+      pricePrintingNet = 0;
+  }
+
+  let priceNet;
+  switch (values.shape) {
+    case "squareSingle":
+      priceNet = cuttingPricePerQty + pricePrintingNet;
+      break;
+    case "otherSingle":
+      priceNet =
+        cuttingPricePerSheet * sheetsNumber +
+        pricePrintingNet +
+        cuttingSetup +
+        cuttingPricePerQty;
+      break;
+    case "onSheet":
+      priceNet =
+        cuttingPricePerSheet * sheetsNumber + pricePrintingNet + cuttingSetup;
       break;
     default:
       priceNet = 0;
   }
+
   let pricePerPc = priceNet / quantity;
   pricePerPc = parseFloat(pricePerPc.toFixed(2));
   if (priceNet >= 200) {

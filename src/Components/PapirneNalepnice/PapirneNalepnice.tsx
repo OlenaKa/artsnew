@@ -16,7 +16,6 @@ import {
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
-import Radio, { RadioProps } from "@mui/material/Radio";
 import RadioGroup from "@mui/material/RadioGroup";
 import FormControlLabel from "@mui/material/FormControlLabel";
 
@@ -57,14 +56,16 @@ export default function PapirneNalepnice({
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
   useEffect(() => {}, [QuotedMOQ]);
-  console.log("PapirneNalepnice");
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
     const { isValid, errors } = validateFormValues({
       height,
       width,
       quantity,
       printColor,
+      shape,
     });
     setHeightError(errors.height);
     setWidthError(errors.width);
@@ -77,6 +78,7 @@ export default function PapirneNalepnice({
         width,
         quantity,
         printColor,
+        shape,
       });
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
@@ -138,7 +140,6 @@ export default function PapirneNalepnice({
                     value={shape}
                     onChange={(e) => setShape(e.target.value)}
                   >
-                    {/* <Typography variant="body2">Izaberite oblik</Typography> */}
                     <FormControlLabel
                       value="squareSingle"
                       control={<CustomRadioSquareSingle />}
@@ -173,6 +174,9 @@ export default function PapirneNalepnice({
                   </MenuItem>
                   <MenuItem value="color" key="color">
                     Kolor štampa
+                  </MenuItem>
+                  <MenuItem value="noPrinting" key="noPrinting">
+                    Bez štampe
                   </MenuItem>
                 </Select>
                 <FormHelperText>
