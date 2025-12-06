@@ -2,6 +2,7 @@ import Stikeri from "./Components/Stikeri/Stikeri";
 import PvcNalepnice from "./Components/PvcNalepnice/PvcNalepnice";
 import ZastitneNalepnice from "./Components/ZastitneNalepnice/ZastitneNalepnice";
 import PapirneNalepnice from "./Components/PapirneNalepnice/PapirneNalepnice";
+import DigitalnaStampa from "./Components/DigitalnaStampa/DigitalnaStampa";
 const categories = [
   {
     title: "3d stikeri",
@@ -44,7 +45,7 @@ const categories = [
       {
         title: "Digitalna štampa",
         path: "/digitalna_stampa",
-        component: "DigitalnaStampa",
+        component: DigitalnaStampa,
       },
       {
         title: "Digitalna stampa velikog formata",

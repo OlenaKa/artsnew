@@ -206,7 +206,7 @@ export default function PapirneNalepnice({
               <FormControl key="width">
                 <TextField
                   id="width"
-                  label="Unesite širinu u cm, format 111,1"
+                  label="Unesite širinu u cm, format 11,1"
                   error={widthError}
                   value={width}
                   type="number"
@@ -222,7 +222,7 @@ export default function PapirneNalepnice({
               <FormControl key="height">
                 <TextField
                   id="height"
-                  label="Unesite visinu u cm, format 111,1"
+                  label="Unesite visinu u cm, format 11,1"
                   error={heightError}
                   value={height}
                   type="number"
@@ -235,7 +235,9 @@ export default function PapirneNalepnice({
                   inputProps={{ min: "0,1", step: "0,1" }}
                 ></TextField>
               </FormControl>
-
+              <Typography variant="subtitle1">
+                *Maksimalne dimenzije papirne nalepnice su 30x42cm
+              </Typography>
               <Button type="submit" variant="contained">
                 Izračunaj
               </Button>

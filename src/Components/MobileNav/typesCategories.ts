@@ -4,7 +4,7 @@ export interface Category {
   title: string;
   path: string;
   component: React.ComponentType<{ imageSrc: string }> | String;
-  imageSrc: string;
+  imageSrc?: string;
   items?: {
     title: string;
     path: string;

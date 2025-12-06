@@ -79,9 +79,9 @@ function CategoryMultyLevel(
   const navigate = useNavigate();
   const handleClik = (event: React.MouseEvent) => {
     event.preventDefault();
-
-    close();
+    console.log(`${category.path}`);
     navigate(`${category.path}`);
+    close();
   };
   const [open, setOpen] = useState(false);
   const handleClick = (event: React.MouseEvent<HTMLElement>) => {
@@ -97,18 +97,18 @@ function CategoryMultyLevel(
         ) : (
           <ExpandMoreIcon className="icon"></ExpandMoreIcon>
         )}
-        <Collapse in={open}>
-          <ul>
-            {category.items?.map((item) => (
-              <li key={item.title}>
-                <NavLink to={item.path} onClick={handleClik}>
-                  {item.title}
-                </NavLink>
-              </li>
-            ))}
-          </ul>
-        </Collapse>
       </div>
+      <Collapse in={open}>
+        <ul>
+          {category.items?.map((item) =>
+            hasChildren(item) ? (
+              <li key={item.title}>{CategoryMultyLevel(item, close)}</li>
+            ) : (
+              <li key={item.title}>{CategorySingleLevel(item, close)}</li>
+            )
+          )}
+        </ul>
+      </Collapse>
     </>
   );
 }
