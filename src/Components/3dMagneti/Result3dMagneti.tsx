@@ -6,13 +6,12 @@ import TableBody from "@mui/material/TableBody";
 import TableCell from "@mui/material/TableCell";
 import TableRow from "@mui/material/TableRow";
 import TableHead from "@mui/material/TableHead";
-import { PriceDetails } from "./formulaHelperDigitalnaStampa";
+import { Result } from "./formulaHelper3dMagneti";
 
-export default function ResultDigitalnaStampa(params: PriceDetails) {
+export default function Result3dMagneti(params: Result) {
   useEffect(() => {
     document.getElementById("result")?.scrollIntoView();
   }, []);
-
   return (
     <>
       <Box>
@@ -21,33 +20,32 @@ export default function ResultDigitalnaStampa(params: PriceDetails) {
         </Typography>
         <Table>
           <TableHead>
+            {/* <TableRow> */}
+
+            {/* </TableRow> */}
           </TableHead>
 
           <TableBody>
-            {params.moq && (
+            {params.minQuantity && (
               <TableRow>
-                <TableCell>Minimalna količina za 1000 din:</TableCell>
-                <TableCell>{params.moq} komada</TableCell>
+                <TableCell>Minimalna količina za 2000 din:</TableCell>
+                <TableCell>{params.minQuantity} komada</TableCell>
               </TableRow>
             )}
             <TableRow>
               <TableCell> Cena po komadu bez PDVa:</TableCell>
-              <TableCell>{params.pricePerPc} din</TableCell>
-            </TableRow>
-            <TableRow>
-              <TableCell> Ukupno za tiraž bez PDVa:</TableCell>
               <TableCell>{params.priceNet} din</TableCell>
             </TableRow>
             <TableRow>
+              <TableCell> Ukupno za tiraž bez PDVa:</TableCell>
+              <TableCell>{params.valueNet} din</TableCell>
+            </TableRow>
+            <TableRow>
               <TableCell> Ukupno za tiraž sa PDVom:</TableCell>
-              <TableCell>{params.priceGross} din</TableCell>
+              <TableCell>{params.valueBrutto} din</TableCell>
             </TableRow>
           </TableBody>
         </Table>
-        <Typography variant="caption" id="result">
-          *Cena je data za digitalnu štampu. Za dodatne informacije, molimo Vas
-          da nas kontaktirate putem e-maila ili na broj telefona.
-        </Typography>
       </Box>
     </>
   );

@@ -1,53 +1,65 @@
 import * as React from "react";
 
-import { useState} from "react";
+import { useState } from "react";
 import themeNavBar from "./themeNavBar";
 import themeSubCategoriesListNavBar from "./themeSubCategorieList";
 import CssBaseline from "@mui/material/CssBaseline";
 import { ThemeProvider } from "@mui/material/styles";
 import { Category } from "../MobileNav/typesCategories";
 import { hasChildren } from "../../helpers/hasChildren";
-import { MenuItem, Link, Menu, Paper, Button, Collapse, Popper, MenuList, ListItem } from "@mui/material";
+import {
+  MenuItem,
+  Link,
+  Menu,
+  Paper,
+  Button,
+  Collapse,
+  Popper,
+  MenuList,
+  ListItem,
+} from "@mui/material";
 import { NavLink } from "react-router-dom";
 import ExpandLessIcon from "@mui/icons-material/ExpandLess";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-
-
+import ClickAwayListener from "@material-ui/core/ClickAwayListener";
+import Grow from "@material-ui/core/Grow";
 
 interface PropsNavBar {
   categories: Category[];
-  
 }
 
-
-export default function NavBar({categories}: PropsNavBar): JSX.Element {
+export default function NavBar({ categories }: PropsNavBar): JSX.Element {
   return (
-<>
-<ThemeProvider theme={themeNavBar}>
-      <CssBaseline />
-      <Paper>
-        
-        <MenuList>
-          {categories.map((category: Category) =>
-            hasChildren(category) ? (
-              <ListItem key={category.title}>{CategoryMultyLevel(category)}</ListItem>
-            ) : (
-              <ListItem key={category.title}>{CategorySingleLevel(category)}</ListItem>
-            )
-          )}
-        </MenuList>
-      </Paper>
+    <>
+      <ThemeProvider theme={themeNavBar}>
+        <CssBaseline />
+        <Paper>
+          <MenuList>
+            {categories.map((category: Category) =>
+              hasChildren(category) ? (
+                <ListItem key={category.title}>
+                  {CategoryMultyLevel(category)}
+                </ListItem>
+              ) : (
+                <ListItem key={category.title}>
+                  {CategorySingleLevel(category)}
+                </ListItem>
+              )
+            )}
+          </MenuList>
+        </Paper>
       </ThemeProvider>
-      </>
-  );}
-  
+    </>
+  );
+}
+
 function CategorySingleLevel(category: Category): JSX.Element {
-  return (<Button>
-    <NavLink to={category.path}>{category.title}</NavLink>
-      </Button>);
+  return (
+    <Button>
+      <NavLink to={category.path}>{category.title}</NavLink>
+    </Button>
+  );
 }
 
 function CategoryMultyLevel(category: Category): JSX.Element {
@@ -59,7 +71,10 @@ function CategoryMultyLevel(category: Category): JSX.Element {
   };
 
   const handleClose = (event: React.MouseEvent<EventTarget>) => {
-    if (anchorRef.current && anchorRef.current.contains(event.target as HTMLElement)) {
+    if (
+      anchorRef.current &&
+      anchorRef.current.contains(event.target as HTMLElement)
+    ) {
       return;
     }
 
@@ -67,7 +82,7 @@ function CategoryMultyLevel(category: Category): JSX.Element {
   };
 
   function handleListKeyDown(event: React.KeyboardEvent) {
-    if (event.key === 'Tab') {
+    if (event.key === "Tab") {
       event.preventDefault();
       setOpen(false);
     }
@@ -85,44 +100,56 @@ function CategoryMultyLevel(category: Category): JSX.Element {
 
   return (
     <>
-    <Button
-    ref={anchorRef}
-    aria-controls={open ? 'menu-list-grow' : undefined}
-    aria-haspopup="true"
-    onClick={handleToggle}
-  >
-     {category.title}
-     {open ? (
+      <Button
+        ref={anchorRef}
+        aria-controls={open ? "menu-list-grow" : undefined}
+        aria-haspopup="true"
+        onClick={handleToggle}
+      >
+        {category.title}
+        {open ? (
           <ExpandLessIcon className="icon"></ExpandLessIcon>
         ) : (
           <ExpandMoreIcon className="icon"></ExpandMoreIcon>
         )}
-  </Button>
-  <Popper open={open} anchorEl={anchorRef.current} role={undefined} transition>
-  {({ TransitionProps, placement }) => (
-    <Grow
-      {...TransitionProps}
-      style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-    >
-      <ThemeProvider theme={themeSubCategoriesListNavBar}> 
-       <Paper className='subCategories'>
-        <ClickAwayListener onClickAway={handleClose}>
-          <MenuList autoFocusItem={open} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-          {category.items?.map((item) => (
-            <MenuItem key={item.title}>
-              <Button> <NavLink to={item.path}>{item.title}</NavLink></Button>
-             
-            </MenuItem>))}
-          </MenuList>
-        </ClickAwayListener>
-      </Paper></ThemeProvider>
-    
-    </Grow>
-  )}
-</Popper>
-</>
-  )
-
-
-
+      </Button>
+      <Popper
+        open={open}
+        anchorEl={anchorRef.current}
+        role={undefined}
+        transition
+      >
+        {({ TransitionProps, placement }) => (
+          <Grow
+            {...TransitionProps}
+            style={{
+              transformOrigin:
+                placement === "bottom" ? "center top" : "center bottom",
+            }}
+          >
+            <ThemeProvider theme={themeSubCategoriesListNavBar}>
+              <Paper className="subCategories">
+                <ClickAwayListener onClickAway={handleClose}>
+                  <MenuList
+                    autoFocusItem={open}
+                    id="menu-list-grow"
+                    onKeyDown={handleListKeyDown}
+                  >
+                    {category.items?.map((item) => (
+                      <MenuItem key={item.title} onClick={() => setOpen(false)}>
+                        <Button>
+                          {" "}
+                          <NavLink to={item.path}>{item.title}</NavLink>
+                        </Button>
+                      </MenuItem>
+                    ))}
+                  </MenuList>
+                </ClickAwayListener>
+              </Paper>
+            </ThemeProvider>
+          </Grow>
+        )}
+      </Popper>
+    </>
+  );
 }

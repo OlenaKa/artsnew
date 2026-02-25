@@ -3,6 +3,9 @@ import PvcNalepnice from "./Components/PvcNalepnice/PvcNalepnice";
 import ZastitneNalepnice from "./Components/ZastitneNalepnice/ZastitneNalepnice";
 import PapirneNalepnice from "./Components/PapirneNalepnice/PapirneNalepnice";
 import DigitalnaStampa from "./Components/DigitalnaStampa/DigitalnaStampa";
+import Magneti2d from "./Components/2dMagneti/2dMagneti";
+import Magneti3d from "./Components/3dMagneti/3dMagneti";
+import Rollup from "./Components/Rollup/Rollup";
 const categories = [
   {
     title: "3d stikeri",
@@ -80,20 +83,25 @@ const categories = [
     component: "Magneti",
     imageSrc: "magneti.jpg",
     items: [
-      { title: "2d magneti", path: "/2d_magneti", component: "2dMagneti" },
-      { title: "3d magneti", path: "/3d_magneti", component: "3dMagneti" },
+      {
+        title: "2d magneti",
+        path: "/2d_magneti",
+        component: Magneti2d,
+        imageSrc: "magneti.jpg",
+      },
+      {
+        title: "3d magneti",
+        path: "/3d_magneti",
+        component: Magneti3d,
+        imageSrc: "magneti.jpg",
+      },
     ],
   },
   {
     title: "Rollup",
     path: "/rollup",
     imageSrc: "rollup picture.jpg",
-    component: "Rollup",
-    items: [
-      { title: "Rollup 85", path: "/rollup_85", component: "Rollup85" },
-      { title: "Rollup 100", path: "/rollup_100", component: "Rollup100" },
-      { title: "Rollup 120", path: "/rollup_120", component: "Rollup120" },
-    ],
+    component: Rollup,
   },
   {
     title: "Promo materijal",

@@ -1,6 +1,6 @@
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
 const positiveInteger = /^[1-9]\d*$/;
-const maxSheetSurface = 1192.8; // 426mm x 280mm
+const maxSheetSurface = 1450.8; //310x468mm  1192.8; // 426mm x 280mm
 const paperPricePerSheet = 19;
 const printingBWUpTo10 = 33;
 const printingBW10to50 = 28;
@@ -52,7 +52,7 @@ function validateFormValues(values: FormValues): ValidationResult {
 function calculateSheets(values: FormValues): number {
   const { height, width, quantity } = values;
   const pcsPerSheet = Math.floor(
-    maxSheetSurface / ((Number(height) + 0.15) * (Number(width) + 0.15))
+    maxSheetSurface / ((Number(height) + 0.15) * (Number(width) + 0.15)),
   );
   return Math.ceil(Number(quantity) / pcsPerSheet);
 }

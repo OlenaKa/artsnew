@@ -49,7 +49,7 @@ export default function PapirneNalepnice({
     number | string | null
   >(null);
   const [QuotedPriceNet, setQuotedPriceNet] = useState<number | string | null>(
-    null
+    null,
   );
   const [QuotedPriceGross, setQuotedPriceGross] = useState<
     number | string | null
@@ -143,7 +143,7 @@ export default function PapirneNalepnice({
                     <FormControlLabel
                       value="squareSingle"
                       control={<CustomRadioSquareSingle />}
-                      label="Pojedinacne nalepnice pravougaonik/kvadrat"
+                      label="Pojedinačne nalepnice pravougaonik/kvadrat"
                     />
                     <FormControlLabel
                       value="otherSingle"
@@ -236,7 +236,7 @@ export default function PapirneNalepnice({
                 ></TextField>
               </FormControl>
               <Typography variant="subtitle1">
-                *Maksimalne dimenzije papirne nalepnice su 30x42cm
+                *Maksimalne dimenzije papirne nalepnice su 310x468mm
               </Typography>
               <Button type="submit" variant="contained">
                 Izračunaj

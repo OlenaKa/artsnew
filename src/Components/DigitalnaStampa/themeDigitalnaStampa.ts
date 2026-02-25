@@ -4,9 +4,22 @@ import themeMain from "../../themesMUI/themeMain";
 const themeDigitalnaStampa = createTheme({
   ...themeMain,
   components: {
-    MuiCssBaseline: {
-      styleOverrides: "",
-    },
+    // MuiCssBaseline: {
+    //   styleOverrides: `
+    //     .digitalnaIntroText {
+    //       margin-top: 32px !important;
+    //       margin-bottom: 16px !important;
+    //     }
+    //   `,
+    // },
+    // // MuiTypography: {
+    // //   styleOverrides: {
+    // //     body2: {
+    // //       sx: { textAlign: "center" },
+    // //       textAlign: "center",
+    // //     },
+    // //   },
+    // // },
     MuiPaper: {
       styleOverrides: {
         root: {
@@ -15,7 +28,7 @@ const themeDigitalnaStampa = createTheme({
             textAlign: "center",
             textTransform: "uppercase",
             fontSize: "2.5rem",
-            fontWeight: "400",
+            fontWeight: "300",
             [themeMain.breakpoints.up("sm")]: {
               width: "100%",
             },
@@ -23,15 +36,15 @@ const themeDigitalnaStampa = createTheme({
           h5: {
             width: "100%",
           },
-          padding: "20px",
-          ".MuiBox-root": {
-            margin: "20px 0px",
-          },
+
+          // ".MuiBox-root": {
+          //   margin: "20px 0px",
+          // },
           [themeMain.breakpoints.up("sm")]: {
             display: "flex",
             flexWrap: "wrap",
             ".MuiBox-root": {
-              width: "70%",
+              width: "80%",
               display: "flex",
               flexWrap: "wrap",
               justifyContent: "space-around",
@@ -40,87 +53,85 @@ const themeDigitalnaStampa = createTheme({
         },
       },
     },
-    MuiCardMedia: {
+
+    MuiCard: {
       styleOverrides: {
         root: {
-          [themeMain.breakpoints.up("sm")]: {
-            width: "30%",
+          borderRadius: 12,
+          overflow: "visible",
+          position: "relative",
+          border: `2px solid ${themeMain.palette.primary.main}75`,
+          transition: "transform 0.2s ease, box-shadow 0.2s ease",
+          "&.quantityCard": {
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+          },
+          "&.quantityCard:hover": {
+            transform: "translateY(-4px)",
+            boxShadow: themeMain.shadows[6],
           },
         },
       },
     },
 
-    MuiFormControl: {
+    MuiCardContent: {
       styleOverrides: {
         root: {
-          display: "flex",
-          padding: "15px",
-          [themeMain.breakpoints.up("sm")]: {
-            display: "flex",
-            margin: "10px",
-            minWidth: "35%",
-            padding: "0",
+          "&.quantityCardContent": {
+            flexGrow: 1,
           },
         },
-      },
-    },
-    MuiTextField: {
-      styleOverrides: {
-        root: {
-          padding: "0",
-        },
-      },
-    },
-    MuiFormLabel: {
-      styleOverrides: {
-        root: {
-          "&.select": {
-            padding: "5%",
-            [themeMain.breakpoints.up("sm")]: {
-              padding: "0",
-            },
-          },
-        },
-      },
-    },
-    MuiOutlinedInput: {
-      styleOverrides: {
-        notchedOutline: {
-          borderColor: themeMain.palette.primary.main,
-        },
-        root: {},
-      },
-    },
-    MuiButton: {
-      styleOverrides: {
-        root: {
-          display: "block",
-          margin: "0 auto",
-          [themeMain.breakpoints.up("sm")]: {
-            display: "flex",
-            alignSelf: "flex-start",
-            margin: "0 45%",
-          },
-        },
-      },
-    },
-    MuiTableCell: {
-      styleOverrides: {
-        root: {
-          borderColor: themeMain.palette.primary.main,
-        },
-      },
-    },
-    MuiList: {
-      styleOverrides: {
-        root: {},
       },
     },
 
-    MuiSvgIcon: {
+    MuiAvatar: {
       styleOverrides: {
-        root: {},
+        root: {
+          "&.quantityAvatar": {
+            width: 36,
+            height: 36,
+            backgroundColor: themeMain.palette.primary.main,
+            color: themeMain.palette.common.white,
+          },
+        },
       },
+    },
+
+    MuiTypography: {
+      variants: [
+        {
+          props: { variant: "subtitle1", className: "digitalnaCardTitle" },
+          style: {
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            // textAlign: "center",
+          },
+        },
+        {
+          props: { variant: "body2", className: "digitalnaIntroText" },
+          style: {
+            margin: "10px 15px",
+          },
+        },
+        {
+          props: { className: "digitalnaPopularBadge" },
+          style: {
+            display: "block",
+            position: "absolute",
+            top: "-3%",
+            left: "7%",
+            fontWeight: "bold",
+            textTransform: "uppercase",
+            // textAlign: "center",
+            backgroundColor: themeMain.palette.primary.main,
+            color: themeMain.palette.common.white,
+            padding: "4px 12px",
+            borderRadius: "20px",
+            fontSize: "0.60rem",
+          },
+        },
+      ],
     },
   },
 });
