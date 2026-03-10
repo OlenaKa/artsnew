@@ -11,9 +11,9 @@ import { Grid } from "@mui/material";
 import { Route, Routes, useRoutes } from "react-router-dom";
 import Footer from "./Components/Footer/Footer";
 import Stikeri from "./Components/Stikeri/Stikeri";
-import categories from "./categories";
+import { fetchCategories, type Category } from "./categories";
 import generateRoutes from "./generateRoutes";
-import { ReactFragment, ReactNode } from "react";
+import { ReactFragment, ReactNode, useEffect, useState } from "react";
 let string = "http://nfc.rs/gallery/";
 
 // interface Category {
@@ -26,28 +26,34 @@ let string = "http://nfc.rs/gallery/";
 
 function App() {
   const matches = useMediaQuery("(min-width:801px)");
-  console.log(generateRoutes(categories));
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    fetchCategories()
+      .then(setCategories)
+      .catch((err) => setError(err.message))
+      .finally(() => setLoading(false));
+  }, []);
+
+  if (loading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error}</div>;
 
   return (
     <>
       <CssBaseline />
       <ThemeProvider theme={themeMain}>
-        {matches ? <Header></Header> : <HeaderMobile></HeaderMobile>}
+        {matches ? (
+          <Header categories={categories}></Header>
+        ) : (
+          <HeaderMobile categories={categories}></HeaderMobile>
+        )}
         <Routes>
-          <Route path="/" element={<MainPage />} />
+          <Route path="/" element={<MainPage categories={categories} />} />
           {generateRoutes(categories)}
-
-          {/* {categories.map(({ title, path, component: Component, imageSrc }) => {
-            return (
-              <Route
-                path={path}
-                element={<Component imageSrc={imageSrc} />}
-                key={title}
-              />
-            );
-          })} */}
         </Routes>
-        <Footer />
+        <Footer categories={categories} />
       </ThemeProvider>
     </>
   );

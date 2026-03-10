@@ -1,18 +1,5 @@
 import { Route } from "react-router-dom";
-
-interface Category {
-  title: string;
-  path: string;
-  imageSrc?: string;
-  component: React.ComponentType<{ imageSrc: string }> | string;
-  items?: {
-    title: string;
-    path: string;
-    imageSrc?: string;
-    component: React.ComponentType<{ imageSrc: string }> | string;
-    items?: [];
-  }[];
-}
+import { type Category } from "./categories";
 
 export default function generateRoutes(categories: Category[]): JSX.Element[] {
   return categories

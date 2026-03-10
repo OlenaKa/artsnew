@@ -10,9 +10,15 @@ import AlternateEmailIcon from "@mui/icons-material/AlternateEmail";
 import MenuIcon from "@mui/icons-material/Menu";
 import MobileNavBar from "../MobileNav/MobileNavBar";
 import { useState, useRef } from "react";
-import categories from "../../categories";
+import { type Category } from "../../categories";
 
-export default function HeaderMobile(): JSX.Element {
+interface HeaderMobileProps {
+  categories: Category[];
+}
+
+export default function HeaderMobile({
+  categories,
+}: HeaderMobileProps): JSX.Element {
   const [isActive, setActive] = useState(false);
 
   function handleOpen() {

@@ -12,7 +12,7 @@ import {
 } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import CssBaseline from "@mui/material/CssBaseline";
-import categories from "../../categories";
+import { type Category } from "../../categories";
 import MainSlider from "./mainSlider/MainSlider";
 import themeMainPage from "./themeMainPage";
 import ImageList from "@mui/material/ImageList";
@@ -24,6 +24,10 @@ import IconButton from "@mui/material/IconButton";
 import useViewport from "../../hooks/useViewport";
 import { Slide } from "@mui/material";
 import { motion, Variants } from "framer-motion";
+
+interface MainPageProps {
+  categories: Category[];
+}
 
 const categoryVariants: Variants = {
   offscreen: {
@@ -57,7 +61,7 @@ const barVariants: Variants = {
   },
 };
 
-export default function MainPage() {
+export default function MainPage({ categories }: MainPageProps) {
   let string = "http://nfc.rs/gallery/";
 
   const { width } = useViewport();
@@ -80,7 +84,7 @@ export default function MainPage() {
                 <img
                   // component="img"
                   alt={category.title}
-                  src={string.concat(category.imageSrc)}
+                  src={string.concat(category.imageSrc ?? "")}
                   title={category.title}
                   loading="lazy"
                 />

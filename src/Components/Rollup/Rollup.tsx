@@ -50,10 +50,14 @@ export default function Rollup({
             {rollupOptions.map((option) => (
               <Card key={option.width} className="rollup-card">
                 <Box className="rollup-card-image">
-                  <img 
-                    src={`http://nfc.rs/gallery/${option.image}`} 
+                  <img
+                    src={`http://nfc.rs/gallery/${option.image}`}
                     alt={option.title}
-                    style={{ width: "100%", height: "100%", objectFit: "cover" }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                    }}
                   />
                 </Box>
                 <CardContent className="rollup-card-content">
