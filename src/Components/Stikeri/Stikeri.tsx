@@ -14,12 +14,15 @@ import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Button } from "@mui/material";
-import { calculateResult, validateForm } from "./formulaHelpersStikers";
+import { Button, CircularProgress } from "@mui/material";
+import {
+  calculateResult,
+  fetchStikeriPrices,
+  validateForm,
+} from "./formulaHelpersStikers";
 import themeStikeri from "./themeStikeri";
-import { Result } from "./formulaHelpersStikers";
+import { FoilPricing, Result } from "./formulaHelpersStikers";
 import ResultStikeri from "./ResultStikeri";
-import { Category } from "../MobileNav/typesCategories";
 
 const positiveNumber = /^[1-9]\d*(\.\d+)?$/;
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
@@ -43,20 +46,24 @@ export default function Stikeri({
   const [quantity, setQuantity] = useState<string | number>("");
   const [quantityError, setQuantityError] = useState(false);
   const [result, setResult] = useState<false | Result>(false);
+  const [pricing, setPricing] = useState<FoilPricing | null>(null);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
 
-  useEffect(() => {}, [
-    foil,
-    shape,
-    width,
-    height,
-    diameter,
-    foilError,
-    shapeError,
-    widthError,
-    heightError,
-    diameterError,
-    result,
-  ]);
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchStikeriPrices()
+      .then((apiPricing) => {
+        setPricing(apiPricing);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
 
   const handleChangeFoil = (event: SelectChangeEvent) => {
     setFoil(`${event.target.value}`);
@@ -122,16 +129,22 @@ export default function Stikeri({
         setWidthError,
         height,
         setHeightError,
-        positiveNumber
+        positiveNumber,
       )
     ) {
+      if (!pricing) {
+        setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+        return;
+      }
+
       const getParams = calculateResult(
         shape,
         foil,
         Number(quantity),
+        pricing,
         width,
         height,
-        diameter
+        diameter,
       );
       setResult(getParams);
     }
@@ -268,9 +281,23 @@ export default function Stikeri({
                   inputProps={{ min: "0", step: "1" }}
                 ></TextField>
               </FormControl>
-              <Button type="submit" variant="contained">
-                Izračunaj
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={pricingLoading || !pricing}
+              >
+                {pricingLoading ? (
+                  <>
+                    <CircularProgress size={16} color="inherit" />
+                    &nbsp;
+                  </>
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
 
             {result && <ResultStikeri {...result} />}

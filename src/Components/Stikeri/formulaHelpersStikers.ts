@@ -1,5 +1,36 @@
-const pricePerSqCmWhite = 2.2; // 1 cent per cm^2
-const pricePerSqCmGold = 2.7; // 1 cent per cm^2
+interface StikeriPricingRow {
+  foil_type: string;
+  price_per_sq_cm: number;
+}
+
+interface StikeriPricingResponse {
+  success: boolean;
+  data: StikeriPricingRow[];
+}
+
+type FoilPricing = Record<string, number>;
+
+async function fetchStikeriPrices(): Promise<FoilPricing> {
+  const mainLink = process.env.REACT_APP_MAINLINK;
+  if (!mainLink) {
+    throw new Error("REACT_APP_MAINLINK is not defined");
+  }
+
+  const response = await fetch(`${mainLink}/stikeri`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const json: StikeriPricingResponse = await response.json();
+  if (!json.success) {
+    throw new Error("Backend returned success=false");
+  }
+
+  return json.data.reduce<FoilPricing>((acc, row) => {
+    acc[row.foil_type] = Number(row.price_per_sq_cm);
+    return acc;
+  }, {});
+}
 
 const validateForm = (
   event: React.FormEvent<HTMLFormElement>,
@@ -15,7 +46,7 @@ const validateForm = (
   setWidthError: (arg0: boolean) => void,
   height: string | number,
   setHeightError: (arg0: boolean) => void,
-  positiveNumber: RegExp
+  positiveNumber: RegExp,
 ) => {
   const setErrorFieldFoil = () => {
     setFoilError(true);
@@ -78,7 +109,7 @@ function calculateSurface(
   shape: string,
   width?: string | number | undefined,
   height?: string | number | undefined,
-  diameter?: string | number | undefined
+  diameter?: string | number | undefined,
 ): number {
   let surface: number | null = null;
 
@@ -130,12 +161,15 @@ function calculateResult(
   shape: string,
   foil: string,
   quantity: number | null | undefined,
+  pricing: FoilPricing,
   width?: string | number | undefined,
   height?: string | number | undefined,
-  diameter?: string | number | undefined
+  diameter?: string | number | undefined,
 ): Result {
-  const pricePerCm = foil === "bela" ? pricePerSqCmWhite : pricePerSqCmGold;
-  console.log(pricePerCm);
+  const pricePerCm = pricing[foil];
+  if (typeof pricePerCm !== "number") {
+    throw new Error(`Pricing not found for foil: ${foil}`);
+  }
 
   const surface = calculateSurface(shape, width, height, diameter);
   const priceNet = Number(roundToTwo(calculatePrice(surface, pricePerCm)));
@@ -170,5 +204,5 @@ function calculateResult(
   }
 }
 
-export { calculateResult, validateForm };
-export type { Result };
+export { calculateResult, fetchStikeriPrices, validateForm };
+export type { FoilPricing, Result };
