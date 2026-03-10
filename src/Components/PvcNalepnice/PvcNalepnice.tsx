@@ -8,10 +8,13 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   validateFormValues,
   calculatePrice,
+  fetchPvcNalepnicePrices,
 } from "./formulaHelperPVCNalepnice";
+import { PvcPriceTier } from "./formulaHelperPVCNalepnice";
 import ResultPvcNalepnice from "./ResultPvcNalepnice";
 
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
@@ -33,26 +36,53 @@ export default function PvcNalepnice({
     number | string | null
   >(null);
   const [QuotedPriceNet, setQuotedPriceNet] = useState<number | string | null>(
-    null
+    null,
   );
   const [QuotedPriceGross, setQuotedPriceGross] = useState<
     number | string | null
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
-  useEffect(() => {}, [QuotedMOQ]);
+  const [pricingTiers, setPricingTiers] = useState<PvcPriceTier[]>([]);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchPvcNalepnicePrices()
+      .then((tiers) => {
+        setPricingTiers(tiers);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!pricingTiers.length) {
+      setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+      return;
+    }
+
     const { isValid, errors } = validateFormValues({ height, width, quantity });
     setHeightError(errors.height);
     setWidthError(errors.width);
     setQuantityError(errors.quantity);
 
     if (isValid) {
-      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice({
-        height,
-        width,
-        quantity,
-      });
+      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice(
+        {
+          height,
+          width,
+          quantity,
+        },
+        pricingTiers,
+      );
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
       setQuotedPriceGross(priceGross);
@@ -148,9 +178,20 @@ export default function PvcNalepnice({
                   inputProps={{ min: "1", step: "1" }}
                 ></TextField>
               </FormControl>
-              <Button type="submit" variant="contained">
-                Izračunaj
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={pricingLoading || !pricingTiers.length}
+              >
+                {pricingLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
             {QuotedPricePerPc && QuotedPriceNet && (
               <ResultPvcNalepnice

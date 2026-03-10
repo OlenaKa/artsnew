@@ -1,11 +1,52 @@
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
 const positiveInteger = /^[1-9]\d*$/;
-const priceTill2M2 = 1800;
-const price2to4M2 = 1450;
-const price4to10M2 = 1380;
-const price10to20M2 = 1200;
-const price20to50M2 = 1100;
-const priceAbove50M2 = 1000;
+
+interface PvcPriceTierRow {
+  min_surface_m2?: number;
+  max_surface_m2?: number | null;
+  price_per_m2?: number;
+  minSurfaceM2?: number;
+  maxSurfaceM2?: number | null;
+  pricePerM2?: number;
+}
+
+interface PvcPriceTier {
+  minSurfaceM2: number;
+  maxSurfaceM2: number | null;
+  pricePerM2: number;
+}
+
+interface PvcPriceResponse {
+  success?: boolean;
+  data?: PvcPriceTierRow[];
+}
+
+async function fetchPvcNalepnicePrices(): Promise<PvcPriceTier[]> {
+  const mainLink = process.env.REACT_APP_MAINLINK;
+  if (!mainLink) {
+    throw new Error("REACT_APP_MAINLINK is not defined");
+  }
+
+  const response = await fetch(`${mainLink}/pvc-nalepnice-prices`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const json = (await response.json()) as PvcPriceResponse | PvcPriceTierRow[];
+  if (!Array.isArray(json) && json.success === false) {
+    throw new Error("Backend returned success=false");
+  }
+
+  const rows = Array.isArray(json) ? json : (json.data ?? []);
+
+  return rows
+    .map((row) => ({
+      minSurfaceM2: Number(row.min_surface_m2 ?? row.minSurfaceM2 ?? 0),
+      maxSurfaceM2: row.max_surface_m2 ?? row.maxSurfaceM2 ?? null,
+      pricePerM2: Number(row.price_per_m2 ?? row.pricePerM2 ?? 0),
+    }))
+    .sort((a, b) => a.minSurfaceM2 - b.minSurfaceM2);
+}
 
 interface FormValues {
   height: string | number;
@@ -40,20 +81,18 @@ function calculateSurface(values: FormValues): number {
   return (Number(height) * Number(width) * Number(quantity)) / 10000;
 }
 
-function getPriceNet(surface: number): number {
-  if (surface < 2) {
-    return surface * priceTill2M2; // Price per m² for surface < 2 m²
-  } else if (surface >= 2 && surface < 4) {
-    return surface * price2to4M2; // Price per m² for surface between 2 and 4 m²
-  } else if (surface >= 4 && surface < 10) {
-    return surface * price4to10M2; // Price per m² for surface between 4 and 10 m²
-  } else if (surface >= 10 && surface < 20) {
-    return surface * price10to20M2; // Price per m² for surface between 10 and 20 m²
-  } else if (surface >= 20 && surface < 50) {
-    return surface * price20to50M2; // Price per m² for surface between 20 and 50 m²
-  } else {
-    return surface * priceAbove50M2; // Price per m² for surface >= 50 m²
+function getPriceNet(surface: number, tiers: PvcPriceTier[]): number {
+  const matchedTier = tiers.find(
+    (tier) =>
+      surface >= tier.minSurfaceM2 &&
+      (tier.maxSurfaceM2 === null || surface < Number(tier.maxSurfaceM2)),
+  );
+
+  if (!matchedTier) {
+    throw new Error("Pricing tier not found for entered dimensions");
   }
+
+  return surface * matchedTier.pricePerM2;
 }
 type PriceDetails = {
   priceNet: number | string;
@@ -61,10 +100,13 @@ type PriceDetails = {
   priceGross: number | string | null;
   moq: number | null;
 };
-function calculatePrice(values: FormValues): PriceDetails {
+function calculatePrice(
+  values: FormValues,
+  tiers: PvcPriceTier[],
+): PriceDetails {
   const quantity = Number(values.quantity);
   const surface = calculateSurface(values);
-  let priceNet = getPriceNet(surface);
+  let priceNet = getPriceNet(surface, tiers);
   let pricePerPc = priceNet / quantity;
   pricePerPc = parseFloat(pricePerPc.toFixed(2));
   if (priceNet >= 1000) {
@@ -96,5 +138,5 @@ function calculatePrice(values: FormValues): PriceDetails {
   }
 }
 
-export { validateFormValues, calculatePrice };
-export type { PriceDetails };
+export { validateFormValues, calculatePrice, fetchPvcNalepnicePrices };
+export type { PriceDetails, PvcPriceTier };
