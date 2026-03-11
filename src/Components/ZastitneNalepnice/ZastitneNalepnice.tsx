@@ -8,9 +8,11 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import {
   validateFormValues,
   calculatePrice,
+  fetchZastitneNalepnicePricing,
 } from "./formulaHelperZastitneNalepnice";
 import ResultZastitneNalepnice from "./ResultZastitneNalepnice";
 
@@ -33,26 +35,53 @@ export default function ZastitneNalepnice({
     number | string | null
   >(null);
   const [QuotedPriceNet, setQuotedPriceNet] = useState<number | string | null>(
-    null
+    null,
   );
   const [QuotedPriceGross, setQuotedPriceGross] = useState<
     number | string | null
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
-  useEffect(() => {}, [QuotedMOQ]);
+  const [pricePerCm, setPricePerCm] = useState<number | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchZastitneNalepnicePricing()
+      .then((price) => {
+        setPricePerCm(price);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
+
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (pricePerCm === null) {
+      setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+      return;
+    }
+
     const { isValid, errors } = validateFormValues({ height, width, quantity });
     setHeightError(errors.height);
     setWidthError(errors.width);
     setQuantityError(errors.quantity);
 
     if (isValid) {
-      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice({
-        height,
-        width,
-        quantity,
-      });
+      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice(
+        {
+          height,
+          width,
+          quantity,
+        },
+        pricePerCm,
+      );
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
       setQuotedPriceGross(priceGross);
@@ -148,9 +177,20 @@ export default function ZastitneNalepnice({
                   inputProps={{ min: "1", step: "1" }}
                 ></TextField>
               </FormControl>
-              <Button type="submit" variant="contained">
-                Izračunaj
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={pricingLoading || pricePerCm === null}
+              >
+                {pricingLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
             {QuotedPricePerPc && QuotedPriceNet && (
               <ResultZastitneNalepnice
