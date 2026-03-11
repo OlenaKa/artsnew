@@ -86,46 +86,121 @@ export const printTypes: {
   },
 ];
 
-// Cene: po otisku, u din bez PDV-a – POPUNI vrednosti:
-export const prices: Record<PrintTypeId, Record<QuantityRangeId, number>> = {
-  "4-0": {
-    "1-10": 100,
-    "11-50": 85,
-    "51-100": 68,
-    "101-250": 58,
-    "251-500": 48,
-    "500+": 40,
-  },
-  "4-4": {
-    "1-10": 150,
-    "11-50": 120,
-    "51-100": 100,
-    "101-250": 85,
-    "251-500": 65,
-    "500+": 60,
-  },
-  "4-1": {
-    "1-10": 130,
-    "11-50": 110,
-    "51-100": 85,
-    "101-250": 71,
-    "251-500": 55,
-    "500+": 50,
-  },
-  "1-0": {
-    "1-10": 33,
-    "11-50": 28,
-    "51-100": 27,
-    "101-250": 24,
-    "251-500": 22,
-    "500+": 20,
-  },
-  "1-1": {
-    "1-10": 46,
-    "11-50": 38,
-    "51-100": 35,
-    "101-250": 32,
-    "251-500": 30,
-    "500+": 27,
-  },
-};
+const printTypeIds: PrintTypeId[] = ["4-0", "4-4", "4-1", "1-0", "1-1"];
+const quantityRangeIds: QuantityRangeId[] = [
+  "1-10",
+  "11-50",
+  "51-100",
+  "101-250",
+  "251-500",
+  "500+",
+];
+
+export interface DigitalnaStampaPricingData {
+  prices: Record<PrintTypeId, Record<QuantityRangeId, number>>;
+  laminationSetup: number;
+  laminationPerSide: number;
+}
+
+interface DigitalnaStampaPricingRow {
+  price_type?: "printing" | "plastification";
+  print_type?: string;
+  quantity_range?: string;
+  price_per_otisak?: number;
+  setup_price?: number;
+  lamination_per_side?: number;
+  priceType?: "printing" | "plastification";
+  printType?: string;
+  quantityRange?: string;
+  pricePerOtisak?: number;
+  setupPrice?: number;
+  laminationPerSide?: number;
+}
+
+interface DigitalnaStampaPricingResponse {
+  success?: boolean;
+  data?: DigitalnaStampaPricingRow[];
+}
+
+function createEmptyPrices(): Record<
+  PrintTypeId,
+  Record<QuantityRangeId, number>
+> {
+  return printTypeIds.reduce(
+    (pricesByType, printTypeId) => {
+      pricesByType[printTypeId] = quantityRangeIds.reduce(
+        (pricesByRange, rangeId) => {
+          pricesByRange[rangeId] = 0;
+          return pricesByRange;
+        },
+        {} as Record<QuantityRangeId, number>,
+      );
+      return pricesByType;
+    },
+    {} as Record<PrintTypeId, Record<QuantityRangeId, number>>,
+  );
+}
+
+function isPrintTypeId(value: string): value is PrintTypeId {
+  return printTypeIds.includes(value as PrintTypeId);
+}
+
+function isQuantityRangeId(value: string): value is QuantityRangeId {
+  return quantityRangeIds.includes(value as QuantityRangeId);
+}
+
+export async function fetchDigitalnaStampaPricing(): Promise<DigitalnaStampaPricingData> {
+  const mainLink = process.env.REACT_APP_MAINLINK;
+  if (!mainLink) {
+    throw new Error("REACT_APP_MAINLINK is not defined");
+  }
+
+  const response = await fetch(`${mainLink}/digitalna-stampa-pricing`);
+  if (!response.ok) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+
+  const json = (await response.json()) as
+    | DigitalnaStampaPricingResponse
+    | DigitalnaStampaPricingRow[];
+
+  if (!Array.isArray(json) && json.success === false) {
+    throw new Error("Backend returned success=false");
+  }
+
+  const rows = Array.isArray(json) ? json : (json.data ?? []);
+  const mappedPrices = createEmptyPrices();
+  let laminationSetup = 0;
+  let laminationPerSide = 0;
+
+  rows.forEach((row) => {
+    const priceType = row.price_type ?? row.priceType;
+
+    if (priceType === "printing") {
+      const printType = row.print_type ?? row.printType ?? "";
+      const quantityRange = row.quantity_range ?? row.quantityRange ?? "";
+      const pricePerOtisak = Number(
+        row.price_per_otisak ?? row.pricePerOtisak ?? 0,
+      );
+
+      if (isPrintTypeId(printType) && isQuantityRangeId(quantityRange)) {
+        mappedPrices[printType][quantityRange] = pricePerOtisak;
+      }
+    }
+
+    if (priceType === "plastification") {
+      laminationSetup = Number(
+        row.setup_price ?? row.setupPrice ?? laminationSetup,
+      );
+      laminationPerSide = Number(
+        row.lamination_per_side ?? row.laminationPerSide ?? laminationPerSide,
+      );
+    }
+  });
+
+  return {
+    prices: mappedPrices,
+    laminationSetup,
+    laminationPerSide,
+  };
+}
