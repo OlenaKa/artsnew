@@ -14,12 +14,15 @@ import InputLabel from "@mui/material/InputLabel";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Button } from "@mui/material";
-import { calculateResult, validateForm } from "./formulaHelper3dMagneti";
+import { Button, CircularProgress } from "@mui/material";
+import {
+  calculateResult,
+  fetchMagneti3dPricing,
+  validateForm,
+} from "./formulaHelper3dMagneti";
 import theme3dMagneti from "./theme3dMagneti";
-import { Result } from "./formulaHelper3dMagneti";
+import { Magneti3dPricing, Result } from "./formulaHelper3dMagneti";
 import Result3dMagneti from "./Result3dMagneti";
-import { Category } from "../MobileNav/typesCategories";
 
 const positiveNumber = /^[1-9]\d*(\.\d+)?$/;
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
@@ -41,18 +44,24 @@ export default function Magneti3d({
   const [quantity, setQuantity] = useState<string | number>("");
   const [quantityError, setQuantityError] = useState(false);
   const [result, setResult] = useState<false | Result>(false);
+  const [pricing, setPricing] = useState<Magneti3dPricing | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
 
-  useEffect(() => {}, [
-    shape,
-    width,
-    height,
-    diameter,
-    shapeError,
-    widthError,
-    heightError,
-    diameterError,
-    result,
-  ]);
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchMagneti3dPricing()
+      .then((apiPricing) => {
+        setPricing(apiPricing);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
 
   const handleChangeShape = (event: SelectChangeEvent) => {
     setShape(`${event.target.value}`);
@@ -114,9 +123,15 @@ export default function Magneti3d({
         positiveNumber,
       )
     ) {
+      if (!pricing) {
+        setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+        return;
+      }
+
       const getParams = calculateResult(
         shape,
         Number(quantity),
+        pricing,
         width,
         height,
         diameter,
@@ -271,10 +286,18 @@ export default function Magneti3d({
               <Button
                 type="submit"
                 variant="contained"
+                disabled={pricingLoading || !pricing}
                 sx={{ mt: 1, minWidth: 200 }}
               >
-                Izračunaj
+                {pricingLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
 
             {result && <Result3dMagneti {...result} />}
