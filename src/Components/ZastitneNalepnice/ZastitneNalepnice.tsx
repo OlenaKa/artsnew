@@ -14,6 +14,7 @@ import {
   calculatePrice,
   fetchZastitneNalepnicePricing,
 } from "./formulaHelperZastitneNalepnice";
+import { ZastitneNalepnicePricing } from "./formulaHelperZastitneNalepnice";
 import ResultZastitneNalepnice from "./ResultZastitneNalepnice";
 
 const positiveNumberOrOneDecimal = /^(\d+(\.\d{1})?)$/;
@@ -41,15 +42,15 @@ export default function ZastitneNalepnice({
     number | string | null
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
-  const [pricePerCm, setPricePerCm] = useState<number | null>(null);
+  const [pricing, setPricing] = useState<ZastitneNalepnicePricing | null>(null);
   const [pricingLoading, setPricingLoading] = useState(true);
   const [pricingError, setPricingError] = useState<string | null>(null);
 
   useEffect(() => {
     setPricingLoading(true);
     fetchZastitneNalepnicePricing()
-      .then((price) => {
-        setPricePerCm(price);
+      .then((apiPricing) => {
+        setPricing(apiPricing);
         setPricingError(null);
       })
       .catch((error: Error) => {
@@ -63,7 +64,7 @@ export default function ZastitneNalepnice({
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
-    if (pricePerCm === null) {
+    if (!pricing) {
       setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
       return;
     }
@@ -80,7 +81,7 @@ export default function ZastitneNalepnice({
           width,
           quantity,
         },
-        pricePerCm,
+        pricing,
       );
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
@@ -180,7 +181,7 @@ export default function ZastitneNalepnice({
               <Button
                 type="submit"
                 variant="contained"
-                disabled={pricingLoading || pricePerCm === null}
+                disabled={pricingLoading || !pricing}
               >
                 {pricingLoading ? (
                   <CircularProgress size={16} color="inherit" />

@@ -7,10 +7,14 @@ import FormControl from "@mui/material/FormControl";
 import Box from "@mui/material/Box";
 import TextField from "@mui/material/TextField";
 import Typography from "@mui/material/Typography";
-import { Button } from "@mui/material";
-import { calculateResult, validateForm } from "./formulaHelper2dMagneti";
+import { Button, CircularProgress } from "@mui/material";
+import {
+  calculateResult,
+  fetchMagneti2dPricing,
+  validateForm,
+} from "./formulaHelper2dMagneti";
 import theme2dMagneti from "./theme2dMagneti";
-import { Result } from "./formulaHelper2dMagneti";
+import { Magneti2dPricing, Result } from "./formulaHelper2dMagneti";
 import Result2dMagneti from "./Result2dMagneti";
 
 const positiveNumber = /^[1-9]\d*(\.\d+)?$/;
@@ -29,8 +33,24 @@ export default function Magneti2d({
   const [quantity, setQuantity] = useState<string | number>("");
   const [quantityError, setQuantityError] = useState(false);
   const [result, setResult] = useState<false | Result>(false);
+  const [pricing, setPricing] = useState<Magneti2dPricing | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
 
-  useEffect(() => {}, [width, height, widthError, heightError, result]);
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchMagneti2dPricing()
+      .then((apiPricing) => {
+        setPricing(apiPricing);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
 
   const handleChangeWidth = (event: React.ChangeEvent<HTMLInputElement>) => {
     setWidth(`${event.target.value}`);
@@ -75,7 +95,17 @@ export default function Magneti2d({
         positiveNumber,
       )
     ) {
-      const getParams = calculateResult(Number(quantity), width, height);
+      if (!pricing) {
+        setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+        return;
+      }
+
+      const getParams = calculateResult(
+        Number(quantity),
+        pricing,
+        width,
+        height,
+      );
       setResult(getParams);
     }
   };
@@ -173,10 +203,18 @@ export default function Magneti2d({
               <Button
                 type="submit"
                 variant="contained"
+                disabled={pricingLoading || !pricing}
                 sx={{ mt: 1, minWidth: 200 }}
               >
-                Izračunaj
+                {pricingLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
 
             {result && <Result2dMagneti {...result} />}

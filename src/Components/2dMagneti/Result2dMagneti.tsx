@@ -28,7 +28,9 @@ export default function Result2dMagneti(params: Result) {
           <TableBody>
             {params.minQuantity && (
               <TableRow>
-                <TableCell>Minimalna količina za 2000 din:</TableCell>
+                <TableCell>
+                  Minimalna količina za minimalni iznos porudžbine:
+                </TableCell>
                 <TableCell>{params.minQuantity} komada</TableCell>
               </TableRow>
             )}

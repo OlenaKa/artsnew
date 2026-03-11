@@ -4,6 +4,13 @@ const positiveInteger = /^[1-9]\d*$/;
 interface ZastitneNalepnicePricingRow {
   price_per_cm?: number;
   pricePerCm?: number;
+  minimum_order_net?: number;
+  minimumOrderNet?: number;
+}
+
+interface ZastitneNalepnicePricing {
+  pricePerCm: number;
+  minimumOrderNet: number;
 }
 
 interface ZastitneNalepnicePricingResponse {
@@ -11,7 +18,7 @@ interface ZastitneNalepnicePricingResponse {
   data?: ZastitneNalepnicePricingRow[];
 }
 
-async function fetchZastitneNalepnicePricing(): Promise<number> {
+async function fetchZastitneNalepnicePricing(): Promise<ZastitneNalepnicePricing> {
   const mainLink = process.env.REACT_APP_MAINLINK;
   if (!mainLink) {
     throw new Error("REACT_APP_MAINLINK is not defined");
@@ -42,7 +49,14 @@ async function fetchZastitneNalepnicePricing(): Promise<number> {
     throw new Error("Invalid price_per_cm value from backend");
   }
 
-  return pricePerCm;
+  const minimumOrderNet = Number(
+    firstRow.minimum_order_net ?? firstRow.minimumOrderNet ?? 1000,
+  );
+
+  return {
+    pricePerCm,
+    minimumOrderNet,
+  };
 }
 
 interface FormValues {
@@ -87,13 +101,16 @@ type PriceDetails = {
   priceGross: number | string | null;
   moq: number | null;
 };
-function calculatePrice(values: FormValues, pricePerCm: number): PriceDetails {
+function calculatePrice(
+  values: FormValues,
+  pricing: ZastitneNalepnicePricing,
+): PriceDetails {
   const quantity = Number(values.quantity);
   const surface = calculateSurface(values);
-  let priceNet = getPriceNet(surface, pricePerCm);
+  let priceNet = getPriceNet(surface, pricing.pricePerCm);
   let pricePerPc = priceNet / quantity;
   pricePerPc = parseFloat(pricePerPc.toFixed(2));
-  if (priceNet >= 1000) {
+  if (priceNet >= pricing.minimumOrderNet) {
     const priceGross = parseFloat((priceNet * 1.2).toFixed(2));
     return {
       priceNet: priceNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
@@ -106,7 +123,7 @@ function calculatePrice(values: FormValues, pricePerCm: number): PriceDetails {
       moq: null,
     };
   } else {
-    const moq = Math.round(1000 / pricePerPc);
+    const moq = Math.round(pricing.minimumOrderNet / pricePerPc);
     priceNet = moq * pricePerPc;
     const priceGross = parseFloat((priceNet * 1.2).toFixed(2));
     return {
@@ -123,4 +140,4 @@ function calculatePrice(values: FormValues, pricePerCm: number): PriceDetails {
 }
 
 export { validateFormValues, calculatePrice, fetchZastitneNalepnicePricing };
-export type { PriceDetails };
+export type { PriceDetails, ZastitneNalepnicePricing };

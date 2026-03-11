@@ -5,15 +5,18 @@ interface PvcPriceTierRow {
   min_surface_m2?: number;
   max_surface_m2?: number | null;
   price_per_m2?: number;
+  minimum_order_net?: number;
   minSurfaceM2?: number;
   maxSurfaceM2?: number | null;
   pricePerM2?: number;
+  minimumOrderNet?: number;
 }
 
 interface PvcPriceTier {
   minSurfaceM2: number;
   maxSurfaceM2: number | null;
   pricePerM2: number;
+  minimumOrderNet: number;
 }
 
 interface PvcPriceResponse {
@@ -44,6 +47,9 @@ async function fetchPvcNalepnicePrices(): Promise<PvcPriceTier[]> {
       minSurfaceM2: Number(row.min_surface_m2 ?? row.minSurfaceM2 ?? 0),
       maxSurfaceM2: row.max_surface_m2 ?? row.maxSurfaceM2 ?? null,
       pricePerM2: Number(row.price_per_m2 ?? row.pricePerM2 ?? 0),
+      minimumOrderNet: Number(
+        row.minimum_order_net ?? row.minimumOrderNet ?? 1000,
+      ),
     }))
     .sort((a, b) => a.minSurfaceM2 - b.minSurfaceM2);
 }
@@ -81,7 +87,7 @@ function calculateSurface(values: FormValues): number {
   return (Number(height) * Number(width) * Number(quantity)) / 10000;
 }
 
-function getPriceNet(surface: number, tiers: PvcPriceTier[]): number {
+function getMatchedTier(surface: number, tiers: PvcPriceTier[]): PvcPriceTier {
   const matchedTier = tiers.find(
     (tier) =>
       surface >= tier.minSurfaceM2 &&
@@ -92,7 +98,7 @@ function getPriceNet(surface: number, tiers: PvcPriceTier[]): number {
     throw new Error("Pricing tier not found for entered dimensions");
   }
 
-  return surface * matchedTier.pricePerM2;
+  return matchedTier;
 }
 type PriceDetails = {
   priceNet: number | string;
@@ -106,10 +112,12 @@ function calculatePrice(
 ): PriceDetails {
   const quantity = Number(values.quantity);
   const surface = calculateSurface(values);
-  let priceNet = getPriceNet(surface, tiers);
+  const matchedTier = getMatchedTier(surface, tiers);
+  const minimumOrderNet = matchedTier.minimumOrderNet;
+  let priceNet = surface * matchedTier.pricePerM2;
   let pricePerPc = priceNet / quantity;
   pricePerPc = parseFloat(pricePerPc.toFixed(2));
-  if (priceNet >= 1000) {
+  if (priceNet >= minimumOrderNet) {
     const priceGross = parseFloat((priceNet * 1.2).toFixed(2));
     return {
       priceNet: priceNet.toLocaleString("sr-RS", { minimumFractionDigits: 2 }),
@@ -122,7 +130,7 @@ function calculatePrice(
       moq: null,
     };
   } else {
-    const moq = Math.round(1000 / pricePerPc);
+    const moq = Math.round(minimumOrderNet / pricePerPc);
     priceNet = moq * pricePerPc;
     const priceGross = parseFloat((priceNet * 1.2).toFixed(2));
     return {

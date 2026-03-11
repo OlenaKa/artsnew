@@ -1,6 +1,8 @@
 interface StikeriPricingRow {
   foil_type: string;
   price_per_sq_cm: number;
+  minimum_order_net?: number;
+  minimumOrderNet?: number;
 }
 
 interface StikeriPricingResponse {
@@ -8,7 +10,10 @@ interface StikeriPricingResponse {
   data: StikeriPricingRow[];
 }
 
-type FoilPricing = Record<string, number>;
+interface FoilPricing {
+  prices: Record<string, number>;
+  minimumOrderNet: number;
+}
 
 async function fetchStikeriPrices(): Promise<FoilPricing> {
   const mainLink = process.env.REACT_APP_MAINLINK;
@@ -26,10 +31,19 @@ async function fetchStikeriPrices(): Promise<FoilPricing> {
     throw new Error("Backend returned success=false");
   }
 
-  return json.data.reduce<FoilPricing>((acc, row) => {
+  const prices = json.data.reduce<Record<string, number>>((acc, row) => {
     acc[row.foil_type] = Number(row.price_per_sq_cm);
     return acc;
   }, {});
+
+  const minimumOrderNet = Number(
+    json.data[0]?.minimum_order_net ?? json.data[0]?.minimumOrderNet ?? 2000,
+  );
+
+  return {
+    prices,
+    minimumOrderNet,
+  };
 }
 
 const validateForm = (
@@ -166,7 +180,9 @@ function calculateResult(
   height?: string | number | undefined,
   diameter?: string | number | undefined,
 ): Result {
-  const pricePerCm = pricing[foil];
+  const pricePerCm = pricing.prices[foil];
+  const minimumOrderNet = pricing.minimumOrderNet;
+
   if (typeof pricePerCm !== "number") {
     throw new Error(`Pricing not found for foil: ${foil}`);
   }
@@ -175,7 +191,7 @@ function calculateResult(
   const priceNet = Number(roundToTwo(calculatePrice(surface, pricePerCm)));
 
   const valueEstimatedNet = Number(priceNet) * Number(quantity);
-  if (valueEstimatedNet >= 2000) {
+  if (valueEstimatedNet >= minimumOrderNet) {
     const valueNet = roundToTwo(valueEstimatedNet);
     const valueBrutto = roundToTwo(valueEstimatedNet * 1.2);
 
@@ -188,7 +204,7 @@ function calculateResult(
     };
     return result;
   } else {
-    const minQuantity = Math.round(2000 / Number(priceNet));
+    const minQuantity = Math.round(minimumOrderNet / Number(priceNet));
     const valueNet = roundToTwo(minQuantity * Number(priceNet));
     const valueBrutto = roundToTwo(Number(valueNet) * 1.2);
 

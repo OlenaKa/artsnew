@@ -29,7 +29,9 @@ export default function ResultZastitneNalepnice(params: PriceDetails) {
           <TableBody>
             {params.moq && (
               <TableRow>
-                <TableCell>Minimalna količina za 1000 din:</TableCell>
+                <TableCell>
+                  Minimalna količina za minimalni iznos porudžbine:
+                </TableCell>
                 <TableCell>{params.moq} komada</TableCell>
               </TableRow>
             )}
