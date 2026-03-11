@@ -8,11 +8,14 @@ import Box from "@mui/material/Box";
 import FormControl from "@mui/material/FormControl";
 import TextField from "@mui/material/TextField";
 import Button from "@mui/material/Button";
+import CircularProgress from "@mui/material/CircularProgress";
 import Select, { SelectChangeEvent } from "@mui/material/Select";
 import {
   validateFormValues,
   calculatePrice,
+  fetchPapirneNalepnicePricing,
 } from "./formulaHelperPapirneNalepnice";
+import { PapirneNalepnicePricing } from "./formulaHelperPapirneNalepnice";
 import MenuItem from "@mui/material/MenuItem";
 import InputLabel from "@mui/material/InputLabel";
 import FormHelperText from "@mui/material/FormHelperText";
@@ -55,10 +58,32 @@ export default function PapirneNalepnice({
     number | string | null
   >(null);
   const [QuotedMOQ, setQuotedMOQ] = useState<number | null>(null);
-  useEffect(() => {}, [QuotedMOQ]);
+  const [pricing, setPricing] = useState<PapirneNalepnicePricing | null>(null);
+  const [pricingLoading, setPricingLoading] = useState(true);
+  const [pricingError, setPricingError] = useState<string | null>(null);
+
+  useEffect(() => {
+    setPricingLoading(true);
+    fetchPapirneNalepnicePricing()
+      .then((config) => {
+        setPricing(config);
+        setPricingError(null);
+      })
+      .catch((error: Error) => {
+        setPricingError(error.message);
+      })
+      .finally(() => {
+        setPricingLoading(false);
+      });
+  }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+
+    if (!pricing) {
+      setPricingError("Cenovnik nije ucitan. Pokusajte ponovo.");
+      return;
+    }
 
     const { isValid, errors } = validateFormValues({
       height,
@@ -73,13 +98,16 @@ export default function PapirneNalepnice({
     setPrintColorError(errors.printColor);
 
     if (isValid) {
-      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice({
-        height,
-        width,
-        quantity,
-        printColor,
-        shape,
-      });
+      const { moq, priceNet, pricePerPc, priceGross } = calculatePrice(
+        {
+          height,
+          width,
+          quantity,
+          printColor,
+          shape,
+        },
+        pricing,
+      );
       setQuotedPriceNet(priceNet);
       setQuotedPricePricePerPc(pricePerPc);
       setQuotedPriceGross(priceGross);
@@ -238,9 +266,20 @@ export default function PapirneNalepnice({
               <Typography variant="subtitle1">
                 *Maksimalne dimenzije papirne nalepnice su 310x468mm
               </Typography>
-              <Button type="submit" variant="contained">
-                Izračunaj
+              <Button
+                type="submit"
+                variant="contained"
+                disabled={pricingLoading || !pricing}
+              >
+                {pricingLoading ? (
+                  <CircularProgress size={16} color="inherit" />
+                ) : (
+                  "Izračunaj"
+                )}
               </Button>
+              {pricingError && (
+                <Typography color="error">{pricingError}</Typography>
+              )}
             </Box>
             {QuotedPricePerPc && QuotedPriceNet && (
               <ResultPapirneNalepnice
